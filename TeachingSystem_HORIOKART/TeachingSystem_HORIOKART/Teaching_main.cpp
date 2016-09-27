@@ -1,6 +1,17 @@
 // TeachingSystem_HORIOKART.cpp : コンソール アプリケーションのエントリ ポイントを定義します。
 //
 
+/*
+経路データ作成プログラム：
+走行経路のデータをティーチングにより作成するためのプログラム
+
+ルートフォーマット：csv
+pointnum, mode, GL_x, GL_y, GL_th
+
+mode	1:直進
+		2:その場回転
+*/
+
 #include "stdafx.h"
 #include <ypspur.h>
 #include <iostream>
@@ -11,6 +22,8 @@
 //コントローラ用ArduinoのCOMポートの指定
 #define COMPORT "\\\\.\\COM15"
 
+
+const char *filename = "SampleRoute.csv";
 
 
 
@@ -66,24 +79,29 @@ int getArduinoHandle(HANDLE& hComm){
 
 int main(int argc, _TCHAR* argv[])
 {
-	double x_GL, y_GL, th_GL;
-	double x_LC, y_LC, th_LC;
+	double x_GL = 0.0, y_GL = 0.0, th_GL = 0.0;
+	double x_LC = 0.0, y_LC = 0.0, th_LC = 0.0;
+	double x_GL_b, y_GL_b, th_GL_b;
 
 	int num = 0;
 	int ret;
 
-	//コントローラーの起動
-	/*if (system("C:/Users/user/Desktop/つくばチャレンジ2016/HRIOKART2016/controller/HORIOKART_Controller/Debug/HORIOKART_Controller.exe")){
-		std::cout << "controller open error....\n";
-	}*/
+	FILE *rt;
 
-	ShellExecute(NULL, NULL, (LPCWSTR)"C:/Users/user/Desktop/つくばチャレンジ2016/HRIOKART2016/controller/HORIOKART_Controller/Debug/HORIOKART_Controller.exe", NULL, NULL, SW_SHOWNORMAL);
+	//コントローラーの起動
+	if (system("start C:/Users/user/Desktop/つくばチャレンジ2016/HRIOKART2016/controller/HORIOKART_Controller/Debug/HORIOKART_Controller.exe")){
+		std::cout << "controller open error....\n";
+	}
 
 	std::cout << "start\n";
 	initSpur();
 
-	//Spur_set_pos_GL(0.0, 0.0, 0.0);
-	//Spur_set_pos_LC(0.0, 0.0, 0.0);
+	Spur_set_pos_GL(0.0, 0.0, 0.0);
+	Spur_set_pos_LC(0.0, 0.0, 0.0);
+
+	std::cout << "Origin reset";
+
+	rt = fopen(filename, "w");
 
 	while (1){
 		if(getchar()=='q')
@@ -97,11 +115,22 @@ int main(int argc, _TCHAR* argv[])
 		std::cout << "GL:" << x_GL << "," << y_GL << "," << th_GL << "\n";
 		std::cout << "LC:" << x_LC << "," << y_LC << "," << th_LC << "\n";
 
+		//直進したとき:20cm以上移動した
+		if (sqrt((x_LC*x_LC) + (y_LC*y_LC)) > 0.2){
+			fprintf(rt, "%d,%d,%lf,%lf,%lf\n", num, 1, x_GL, y_GL, th_GL);
+		}
+
+		//回転だけのとき
+
 		num++;
 
-		//Spur_set_pos_LC(0.0, 0.0, 0.0);
+		Spur_set_pos_LC(0.0, 0.0, 0.0);
+		x_GL_b = x_GL; y_GL_b = y_GL; th_GL_b = th_GL;
+
 		
 	}
+
+	fclose(rt);
 
 	std::cout << "Program End\n";
 

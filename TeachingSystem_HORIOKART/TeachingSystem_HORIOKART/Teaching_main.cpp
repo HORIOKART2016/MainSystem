@@ -73,10 +73,10 @@ int main(int argc, _TCHAR* argv[])
 	int ret;
 
 	//コントローラーの起動
-	if (system("C:\hoge\hoge\hoge\HORIOKART_controller.exe")){
+	if (system("C:/Users/user/Desktop/つくばチャレンジ2016/HRIOKART2016/controller/HORIOKART_Controller/Debug/HORIOKART_Controller.exe")){
 		std::cout << "controller open error....\n";
 	}
-
+	std::cout << "start\n";
 	initSpur();
 
 	//Spur_set_pos_GL(0.0, 0.0, 0.0);

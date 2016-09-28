@@ -12,9 +12,13 @@ mode	1:’¼i
 		2:‚»‚Ìê‰ñ“]
 */
 
+#pragma warning(disable:4996)
+
 #include "stdafx.h"
-#include <ypspur.h>
+
 #include <iostream>
+#include <ypspur.h>
+
 #include <math.h>
 #include <windows.h>
 #include <stdlib.h>
@@ -101,7 +105,7 @@ int main(int argc, _TCHAR* argv[])
 
 	std::cout << "Origin reset";
 
-	rt = fopen(filename, "w");
+	fopen_s(&rt, filename, "w");
 
 	while (1){
 		if(getchar()=='q')

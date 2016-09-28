@@ -5,10 +5,11 @@
 
 #pragma once
 
+#include "targetver.h"
+
+
 #define _CRT_SECURE_NO_WARININGS
 
-
-#include "targetver.h"
 
 #include <stdio.h>
 #include <tchar.h>

@@ -80,7 +80,6 @@ void RunControl_mainloop(void){
 	double x_GL = 0.0, y_GL = 0.0, th_GL = 0.0;
 	double x_LC = 0.0, y_LC = 0.0, th_LC = 0.0;
 
-
 	//各座標系を原点に設定
 	Spur_set_pos_GL(0.0, 0.0, 0.0);
 	Spur_set_pos_LC(0.0, 0.0, 0.0);
@@ -90,12 +89,15 @@ void RunControl_mainloop(void){
 	//加速度の設定(m/s･s)
 	Spur_set_accel(acc / 3600, acc / 3600);
 
-
+	std::cout << "runcontrol start\n";
 
 	//ループの開始
 	while (fgets(buf, 5412, rt) != NULL){
 		//目標点の読み込み
 		sscanf(buf, "%d,%d,%lf,%lf,%lf",&num,&mode,&tar_x,&tar_y,&tar_th);
+
+		std::cout << "num:" << num << "\n";
+		std::cout << "target:" << tar_x << "," << tar_y << "," << tar_th << "\n";
 
 		Spur_line_GL(tar_x, tar_y, tar_th);
 

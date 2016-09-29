@@ -85,9 +85,14 @@ void RunControl_mainloop(void){
 	Spur_set_pos_LC(0.0, 0.0, 0.0);
 
 	//最高速度の設定(m/s)
-	Spur_set_vel(vel / 3600, vel / 3600);
+	//Spur_set_vel(vel / 3600);
 	//加速度の設定(m/s･s)
-	Spur_set_accel(acc / 3600, acc / 3600);
+	//Spur_set_accel(acc / 3600);
+
+	Spur_set_vel(0.3);		//速度0.3m/sec
+	Spur_set_accel(1.0);	//加速度（m/s/s）
+	Spur_set_angvel(1.5);	//角速度（rad/s)
+	Spur_set_angaccel(2.0);		//角加速度（rad/s/s)
 
 	std::cout << "runcontrol start\n";
 

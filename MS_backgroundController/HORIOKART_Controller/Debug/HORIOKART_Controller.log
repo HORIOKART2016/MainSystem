@@ -1,0 +1,20 @@
+﻿2016/09/30 11:14:25 にビルドを開始しました。
+     1>ノード 2 上のプロジェクト "C:\Users\user\Documents\tukuba-git\MainSystem\MS_backgroundControler\HORIOKART_Controller\HORIOKART_Controller.vcxproj" (Rebuild ターゲット)。
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\ypspur\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\HORIOKART_Controller.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\ypspur\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\HORIOKART_Controller.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt HORIOKART_Controller.cpp
+         HORIOKART_Controller.cpp
+     1>c:\ypspur\include\ypparam.h : warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+     1>c:\users\user\documents\tukuba-git\mainsystem\ms_backgroundcontroler\horiokart_controller\horiokart_controller.cpp(140): warning C4101: 'vl' : ローカル変数は 1 度も使われていません。
+     1>c:\users\user\documents\tukuba-git\mainsystem\ms_backgroundcontroler\horiokart_controller\horiokart_controller.cpp(140): warning C4101: 'vr' : ローカル変数は 1 度も使われていません。
+     1>c:\users\user\documents\tukuba-git\mainsystem\ms_backgroundcontroler\horiokart_controller\horiokart_controller.cpp(97): warning C4715: 'senddata' : 値を返さないコントロール パスがあります。
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\user\Documents\tukuba-git\MainSystem\MS_backgroundControler\Debug\HORIOKART_Controller.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\ypspur\lib libypspur_dll.lib "libypspur-md_dll.lib" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\user\Documents\tukuba-git\MainSystem\MS_backgroundControler\Debug\HORIOKART_Controller.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\user\Documents\tukuba-git\MainSystem\MS_backgroundControler\Debug\HORIOKART_Controller.lib" /MACHINE:X86 Debug\HORIOKART_Controller.obj
+         Debug\stdafx.obj
+         HORIOKART_Controller.vcxproj -> C:\Users\user\Documents\tukuba-git\MainSystem\MS_backgroundControler\Debug\HORIOKART_Controller.exe
+     1>プロジェクト "C:\Users\user\Documents\tukuba-git\MainSystem\MS_backgroundControler\HORIOKART_Controller\HORIOKART_Controller.vcxproj" (Rebuild ターゲット) のビルドが完了しました。
+
+ビルドに成功しました。
+
+経過時間 00:00:01.06

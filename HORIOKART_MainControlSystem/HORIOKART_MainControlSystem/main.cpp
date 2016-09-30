@@ -8,6 +8,8 @@
 #include <windows.h>
 #include <stdlib.h>
 
+#define PI 3.14159265359
+
 //コントローラ用ArduinoのCOMポートの指定
 #define COMPORT "\\\\.\\COM15"
 
@@ -18,6 +20,15 @@ FILE *rt;
 
 #define vel 3000		//最高速度(m/h)
 #define acc	1500		//最大加速度(m/h/s)
+
+//試しに時間計測してみる
+LARGE_INTEGER freq;
+LARGE_INTEGER start, now;
+
+
+//試しにトルク記録してみる
+FILE *trq;
+const char *torq_record = "TorqRecord.csv";
 
 
 //ypspurとの通信の初期化
@@ -36,13 +47,22 @@ int initSpur(void){
 
 	std::cout << "Spur initialized\n\n";
 
+	Spur_set_vel(vel / 3600);		//速度0.3m/sec
+	Spur_set_accel(acc / 3600);	//加速度（m/s/s）
+	Spur_set_angvel(90 * PI / 180);	//角速度（rad/s)
+	Spur_set_angaccel(180 * PI / 180);		//角加速度（rad/s/s)
+
+	//トルク記録用のファイルオーぷん
+	trq = fopen(torq_record, "w");
+	fprintf(trq, "time,fase,right_torque,left_torque,x,y,th\n");
+
 	return 0;
 }
 
 
 
 //Arduinoのハンドルを取得する
-
+//使ってない
 int getArduinoHandle(HANDLE& hComm){
 	//シリアルポートを開いてハンドルを取得
 
@@ -71,10 +91,69 @@ int getArduinoHandle(HANDLE& hComm){
 
 
 
+//非常停止の判断する関数
+//(非常停止の指令は別のプログラムから出される)
+void EmergencyButtonState(double x, double y, double th){
+	
+	double RightAngVel, LeftAngVel;
+	double Avel;
+	int emergency_time_count;
+
+	YP_get_wheel_vel(&RightAngVel, &LeftAngVel);
+	
+	Avel = (RightAngVel + LeftAngVel) / 2;
+
+	//回転数が非常に小さい場合にループに入る
+	while(Avel < 0.001){
+		std::cout << "emergency stop?\n";
+		emergency_time_count++;
+		if (emergency_time_count>10){
+			//1秒間止まったままだと非常停止だと判断する
+
+			std::cout << "I think emergency stop now!!\n";
+			std::cout << "If start again, Please hit key!!\n";
+			getchar();
+
+			//再開する場合サイド指令を送る
+			Spur_line_GL(x, y, th);
+
+			break;
+		}
+		
+		Sleep(100);
+
+	}
+
+}
+
+
+
+//試しにトルクを取得してみる
+//とりあえずはcsvにためるだけ
+//何かに使うかもしれない(空転検知等)
+void RecordTorq(int num){
+	
+	double R_torq, L_torq,x,y,th;
+
+	YP_get_wheel_torque(&R_torq, &L_torq);
+	Spur_get_pos_GL(&x, &y, &th);
+
+	QueryPerformanceCounter(&now);
+
+	fprintf(trq, "%lf,%d,%lf,%lf,%lf,%lf,%lf\n", (double)((now.QuadPart - start.QuadPart) / freq.QuadPart), num, R_torq, L_torq, x, y, th);
+
+
+}
+
+
+
+
+//走行制御用のメインループ
 void RunControl_mainloop(void){
 
 	char buf[512];
 	int num, mode;
+	//目的地の座標（GL）
 	double tar_x, tar_y, tar_th;
 
 	double x_GL = 0.0, y_GL = 0.0, th_GL = 0.0;
@@ -83,18 +162,10 @@ void RunControl_mainloop(void){
 	//各座標系を原点に設定
 	Spur_set_pos_GL(0.0, 0.0, 0.0);
 	Spur_set_pos_LC(0.0, 0.0, 0.0);
-
-	//最高速度の設定(m/s)
-	//Spur_set_vel(vel / 3600);
-	//加速度の設定(m/s･s)
-	//Spur_set_accel(acc / 3600);
-
-	Spur_set_vel(0.3);		//速度0.3m/sec
-	Spur_set_accel(1.0);	//加速度（m/s/s）
-	Spur_set_angvel(1.5);	//角速度（rad/s)
-	Spur_set_angaccel(2.0);		//角加速度（rad/s/s)
-
+	
 	std::cout << "runcontrol start\n";
+
+	QueryPerformanceCounter(&start);
 
 	//ループの開始
 	while (fgets(buf, 5412, rt) != NULL){
@@ -110,12 +181,19 @@ void RunControl_mainloop(void){
 		while (!Spur_over_line_GL(tar_x, tar_y, tar_th)){
 
 			//ここに各センサからのフィードバックを入れる
+			
+			//緊急停止の状態取得
+			EmergencyButtonState(tar_x,tar_y,tar_th);
 
+			//トルクの計測（お試し)
+			RecordTorq(num);
 
 			//駆動指令を修正する場合の動作をここに挿入
 
 			Sleep(10);
 		}
+
+
 		//目標地点付近に到達したら停止
 		Spur_stop();
 
@@ -143,9 +221,11 @@ void RunControl_mainloop(void){
 }
 
 
+
 int main(void)
 {
-		
+	QueryPerformanceFrequency(&freq);
+
 	//経路データを開く
 	if ((rt = fopen(routefile, "r")) == NULL){
 		//出来れば1度読みこんで有効な経路が入っているかどうかを確認する（今後の課題）
@@ -156,13 +236,11 @@ int main(void)
 
 
 	//バックグラウンドでコントローラは起動しておく
-	/*if (system("start C:/Users/user/Desktop/つくばチャレンジ2016/HRIOKART2016/controller/HORIOKART_Controller/Debug/HORIOKART_Controller.exe")){
+	if (system("start ../../MS_backgroundController/Debug/HORIOKART_Controller.exe")){
 		std::cout << "controller open error....\n";
 	}
 	else{ std::cout << "cotroller Open\n"; }
-	*/
-	//コントローラを動かしてると途中で止める指令入れちゃうので仕様変更が必要
-
+	
 	//ここに障害物検知用のURGのハンドル等が入る
 
 
@@ -179,6 +257,11 @@ int main(void)
 
 	//走行制御ループに突入
 	RunControl_mainloop();
+
+
+	//デバッグ用
+	//トルク計測ファイルの保存
+	fclose(trq);
 
 	return 0;
 }

@@ -115,7 +115,7 @@ void EmergencyButtonState(double x, double y, double th){
 			getchar();
 
 			//再開する場合サイド指令を送る
-			Spur_line_GL(x, y, th);
+			Spur_line_LC(x, y, th);
 
 			break;
 		}
@@ -153,37 +153,80 @@ void RunControl_mainloop(void){
 
 	char buf[512];
 	int num, mode;
-	//目的地の座標（GL）
-	double tar_x, tar_y, tar_th;
 
-	double x_GL = 0.0, y_GL = 0.0, th_GL = 0.0;
-	double x_LC = 0.0, y_LC = 0.0, th_LC = 0.0;
+	//目的地の座標（GL）
+	double tar_x_GL, tar_y_GL, tar_th_GL;
+	//目的地の座標（LC）
+	double tar_x_LC, tar_y_LC, tar_th_LC;
+	//前の点の座標を記録
+	double before_x_GL = 0.0f, before_y_GL = 0.0f, before_th_GL = 0.0f;
+
+	//左右のLCの値(ｙ)の制限 左：正（+）　右：負（-）
+	double PassibleRange_left = 1.0, PassibleRange_right = -1.0;
+		
+	//エンコーダ値取得用の変数
+	double x_GL = 0.0f, y_GL = 0.0f, th_GL = 0.0f;
+	double x_LC = 0.0f, y_LC = 0.0f, th_LC = 0.0f;
+
+
 
 	//各座標系を原点に設定
 	Spur_set_pos_GL(0.0, 0.0, 0.0);
 	Spur_set_pos_LC(0.0, 0.0, 0.0);
 	
+	//一応時間計測：開始
+	QueryPerformanceCounter(&start);
+
 	std::cout << "runcontrol start\n";
 
-	QueryPerformanceCounter(&start);
 
 	//ループの開始
 	while (fgets(buf, 5412, rt) != NULL){
+		
 		//目標点の読み込み
-		sscanf(buf, "%d,%d,%lf,%lf,%lf",&num,&mode,&tar_x,&tar_y,&tar_th);
+		sscanf(buf, "%d,%d,%lf,%lf,%lf",&num,&mode,&tar_x_GL,&tar_y_GL,&tar_th_GL);
+
 
 		std::cout << "num:" << num << "\n";
-		std::cout << "target:" << tar_x << "," << tar_y << "," << tar_th << "\n";
+		std::cout << "target:" << tar_x_GL << "," << tar_y_GL << "," << tar_th_GL << "\n";
 
-		Spur_line_GL(tar_x, tar_y, tar_th);
 
-		//到達したかのループ
-		while (!Spur_over_line_GL(tar_x, tar_y, tar_th)){
+		//駆動指令
+		Spur_line_GL(tar_x_GL, tar_y_GL, tar_th_GL);
+
+		//LCでの目標座標も取得しておく
+		tar_x_LC = tar_x_GL - before_x_GL;
+		tar_y_LC = tar_y_GL - before_y_GL;
+		tar_th_LC = 0.0;
+
+
+		//直線上に到達したかのループ
+		while (!Spur_near_ang_GL(tar_th_GL, 0.1)){
+			
+			//到達するまでは障害物検知・緊急停止・トルク計測のみを行う
+			EmergencyButtonState(tar_x_LC, tar_y_LC, tar_th_LC);
+			
+			//トルクの計測（お試し)
+			RecordTorq(num);
+			
+			//回避指令
+
+			Sleep(10);
+		}
+	
+
+		//角度が到達したらLCをセットする
+		Spur_get_pos_GL(&x_GL, &y_GL, &th_GL);
+		Spur_set_pos_LC(x_GL - before_x_GL, y_GL - before_y_GL, tar_th_GL - th_GL);		//角度の計算が？
+		
+
+		//到達したかのループ　:　少し手前で曲がり始める
+		while (!Spur_over_line_LC(tar_x_LC - 0.3, tar_y_LC, tar_th_LC)){
 
 			//ここに各センサからのフィードバックを入れる
 			
 			//緊急停止の状態取得
-			EmergencyButtonState(tar_x,tar_y,tar_th);
+			EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL);
 
 			//トルクの計測（お試し)
 			RecordTorq(num);
@@ -194,14 +237,13 @@ void RunControl_mainloop(void){
 		}
 
 
-		//目標地点付近に到達したら停止
-		Spur_stop();
+
+
 
 		Spur_get_pos_GL(&x_GL, &y_GL, &th_GL);
 		Spur_get_pos_LC(&x_LC, &y_LC, &th_LC);
 
-		std::cout << "num:" << num << "\n";
-		std::cout << "target:" << tar_x << "," << tar_y << "," << tar_th << "\n";
+	
 		std::cout << "  GL  :" << x_GL << "," << y_GL << "," << th_GL << "\n";
 		std::cout << "  LC  :" << x_LC << "," << y_LC << "," << th_LC << "\n\n";
 
@@ -209,6 +251,11 @@ void RunControl_mainloop(void){
 
 		//LCを原点にする
 		Spur_set_pos_LC(0.0, 0.0, 0.0);
+
+		//前の目的座標を記録しておく
+		before_x_GL = tar_x_GL;
+		before_y_GL = tar_y_GL;
+		before_th_GL = tar_th_GL;
 
 		//次の経路へ
 	}
@@ -236,7 +283,7 @@ int main(void)
 
 
 	//バックグラウンドでコントローラは起動しておく
-	if (system("start ../../MS_backgroundController/Debug/HORIOKART_Controller.exe")){
+	if (system("start MS_Controller.exe")){
 		std::cout << "controller open error....\n";
 	}
 	else{ std::cout << "cotroller Open\n"; }

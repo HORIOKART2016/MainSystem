@@ -159,13 +159,20 @@ int main(int argc, _TCHAR* argv[])
 		state = (int)arduino_state[0];
 		//printf("%d\n", (int)arduino_state[0]);
 		
+		if (before_state == 99){
+			if (state != 99){
+				Spur_stop();
+				Spur_unfreeze();
+			}
+		}
 
 		//”ñí’â~ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é‚Æ‚«‚Í’¼‚¿‚É’â~M†‚ğ‘—‚é
-		if (state == 99){
+		else if (state == 99){
 				
-			Spur_stop();
-
+			Spur_freeze();
+			before_state = 99;
 			Sleep(1000);
+			
 		}
 		else{
 

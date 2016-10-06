@@ -127,6 +127,26 @@ void EmergencyButtonState(double x, double y, double th){
 }
 
 
+//回避不能の障害物に対するループ
+int Unvoidable_Obstacle(){
+
+
+	Spur_stop();		//回避不能の障害物を発見した場合直ちに停止する
+
+	int obstacle=8;
+
+	while (1){
+		//障害物の確認
+		//obstacle=detectObstacle;
+		if (obstacle!=8){
+			//回避不能の障害物がなくなるとその位置のステータスを返す
+			return obstacle;
+		}
+		Sleep(100);
+	}
+
+}
+
 
 //試しにトルクを取得してみる
 //とりあえずはcsvにためるだけ
@@ -153,6 +173,10 @@ void RunControl_mainloop(void){
 
 	char buf[512];
 	int num, mode;
+
+	int loop_count = 0;
+
+	int Obstacle_state = 0;
 
 	//目的地の座標（GL）
 	double tar_x_GL, tar_y_GL, tar_th_GL;
@@ -184,7 +208,7 @@ void RunControl_mainloop(void){
 	while (fgets(buf, 5412, rt) != NULL){
 		
 		//目標点の読み込み
-		sscanf(buf, "%d,%d,%lf,%lf,%lf",&num,&mode,&tar_x_GL,&tar_y_GL,&tar_th_GL);
+		sscanf(buf, "%d,%d,%lf,%lf,%lf,%lf,%lf", &num, &mode, &tar_x_GL, &tar_y_GL, &tar_th_GL, &PassibleRange_right, &PassibleRange_left);
 
 
 		std::cout << "num:" << num << "\n";
@@ -198,6 +222,7 @@ void RunControl_mainloop(void){
 		tar_x_LC = tar_x_GL - before_x_GL;
 		tar_y_LC = tar_y_GL - before_y_GL;
 		tar_th_LC = 0.0;
+
 
 
 		//直線上に到達したかのループ
@@ -215,21 +240,35 @@ void RunControl_mainloop(void){
 		}
 	
 
+
 		//角度が到達したらLCをセットする
 		Spur_get_pos_GL(&x_GL, &y_GL, &th_GL);
 		Spur_set_pos_LC(x_GL - before_x_GL, y_GL - before_y_GL, tar_th_GL - th_GL);		//角度の計算が？
 		
 
+
+
 		//到達したかのループ　:　少し手前で曲がり始める
 		while (!Spur_over_line_LC(tar_x_LC - 0.3, tar_y_LC, tar_th_LC)){
-
+		
+			//トルクの計測（お試し)
+			RecordTorq(num);
+			
 			//ここに各センサからのフィードバックを入れる
 			
 			//緊急停止の状態取得
 			EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL);
+			
+			//障害物の位置検知
+			//Obstacle_state=detectObstacle();
+			if (Obstacle_state == 8){
+				Spur_stop();
+			}
 
-			//トルクの計測（お試し)
-			RecordTorq(num);
+			
+			//左右の道幅（リミット）の取得（100ループに一回）
+			//detectLoadLimit();
+					
 
 			//駆動指令を修正する場合の動作をここに挿入
 

@@ -19,7 +19,7 @@
 #define MAX_ACC 2000		//‰Á‘¬“x‚Ìİ’è  [m/h.s]
 
 
-#define COMPORT "\\\\.\\COM15"
+#define COMPORT "\\\\.\\COM17"
 
 bool isInitialized = false;
 
@@ -162,14 +162,16 @@ int main(int argc, _TCHAR* argv[])
 		if (before_state == 99){
 			if (state != 99){
 				Spur_stop();
-				Spur_unfreeze();
+				//Spur_unfreeze();
 			}
 		}
 
 		//”ñí’â~ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é‚Æ‚«‚Í’¼‚¿‚É’â~M†‚ğ‘—‚é
 		else if (state == 99){
 				
-			Spur_freeze();
+			//Spur_freeze();
+			Spur_stop();
+			printf("Estop\n");
 			before_state = 99;
 			Sleep(1000);
 			
@@ -265,7 +267,7 @@ int main(int argc, _TCHAR* argv[])
 			//¶‚É‹È‚ª‚é‚æ‚¤‚É—¼—Ö‚ğ‹t‰ñ“]
 			else if (button_state[2] == 1){
 				if (before_state != 8){
-					YP_wheel_vel(ang_vel, ang_vel);
+					YP_wheel_vel(-ang_vel, -ang_vel);
 					//printf("status update\nleft\n");
 				}
 				before_state = 8;
@@ -273,7 +275,7 @@ int main(int argc, _TCHAR* argv[])
 			//right
 			else if (button_state[3] == 1){
 				if (before_state != 9){
-					YP_wheel_vel(-ang_vel, -ang_vel);
+					YP_wheel_vel(ang_vel, ang_vel);
 					//printf("status update\nright\n");
 				}
 
@@ -306,7 +308,7 @@ int main(int argc, _TCHAR* argv[])
 
 		
 		//ypspur‰æ’â~‚·‚é‚Ì‚ğ–h‚®‚½‚ß‚É’â~‚µ‚Ä‚¢‚é‚Æ‚«‚É’èŠú“I‚ÉƒRƒ}ƒ“ƒh‚ğ‘—‚é
-		YP_get_wheel_vel(&vr, &vl);
+		/*YP_get_wheel_vel(&vr, &vl);
 		if (standby_count > 100){
 			//5•bŠÔM†‚ª‚È‚©‚Á‚½‚Æ‚«
 			if ((vr + vl) / 2 == 0.0){
@@ -324,7 +326,7 @@ int main(int argc, _TCHAR* argv[])
 				stanby_stop_count = 0;
 			}
 		
-		}
+		}*/
 
 		Sleep(50);
 		standby_count++;

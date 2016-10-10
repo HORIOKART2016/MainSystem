@@ -16,6 +16,7 @@
 
 //ルートのファイル名
 const char *routefile = "SampleRoute.csv";
+//const char *routefile = "../../TeachingSystem_HORIOKART/TeachingSystem_HORIOKART/SampleRoute.csv";
 FILE *rt;
 
 #define vel 3000		//最高速度(m/h)

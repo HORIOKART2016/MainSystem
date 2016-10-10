@@ -97,7 +97,7 @@ void EmergencyButtonState(double x, double y, double th){
 	
 	double RightAngVel, LeftAngVel;
 	double Avel;
-	int emergency_time_count;
+	int emergency_time_count=0;
 
 	YP_get_wheel_vel(&RightAngVel, &LeftAngVel);
 	
@@ -288,9 +288,6 @@ void RunControl_mainloop(void){
 
 
 
-		//LCを原点にする
-		Spur_set_pos_LC(0.0, 0.0, 0.0);
-
 		//前の目的座標を記録しておく
 		before_x_GL = tar_x_GL;
 		before_y_GL = tar_y_GL;
@@ -322,7 +319,7 @@ int main(void)
 
 
 	//バックグラウンドでコントローラは起動しておく
-	if (system("start MS_Controller.exe")){
+	if (system("start ../Debug/MS_Controller.exe")){
 		std::cout << "controller open error....\n";
 	}
 	else{ std::cout << "cotroller Open\n"; }

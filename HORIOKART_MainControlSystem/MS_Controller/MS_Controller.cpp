@@ -308,7 +308,7 @@ int main(int argc, _TCHAR* argv[])
 
 		
 		//ypspur‰æ’â~‚·‚é‚Ì‚ğ–h‚®‚½‚ß‚É’â~‚µ‚Ä‚¢‚é‚Æ‚«‚É’èŠú“I‚ÉƒRƒ}ƒ“ƒh‚ğ‘—‚é
-		/*YP_get_wheel_vel(&vr, &vl);
+		YP_get_wheel_vel(&vr, &vl);
 		if (standby_count > 100){
 			//5•bŠÔM†‚ª‚È‚©‚Á‚½‚Æ‚«
 			if ((vr + vl) / 2 == 0.0){
@@ -326,7 +326,7 @@ int main(int argc, _TCHAR* argv[])
 				stanby_stop_count = 0;
 			}
 		
-		}*/
+		}
 
 		Sleep(50);
 		standby_count++;

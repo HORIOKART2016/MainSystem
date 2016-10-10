@@ -112,14 +112,14 @@ int main(int argc, _TCHAR* argv[])
 	char arduino_state[1];
 	unsigned long len;
 	int ret;
-	int state;
+	int state=0;
 	int button_state[6];
 	//0:front 1:back 2:left 3:rigtht 4:free 5:emergency
 
 	int emergency_state = 0;
 	double ang_vel;
 
-	int before_state = 100;
+	int before_state = 0;
 
 	double vr, vl;
 
@@ -162,12 +162,13 @@ int main(int argc, _TCHAR* argv[])
 		if (before_state == 99){
 			if (state != 99){
 				Spur_stop();
+				printf("Emergency\n");
 				//Spur_unfreeze();
 			}
 		}
 
 		//非常停止ボタンが押されているときは直ちに停止信号を送る
-		else if (state == 99){
+	/*	else if (state == 99){
 				
 			//Spur_freeze();
 			Spur_stop();
@@ -175,7 +176,7 @@ int main(int argc, _TCHAR* argv[])
 			before_state = 99;
 			Sleep(1000);
 			
-		}
+		}*/
 		else{
 
 			read_states(state, button_state);
@@ -289,6 +290,7 @@ int main(int argc, _TCHAR* argv[])
 					YP_wheel_vel(0.0, 0.0);
 					YP_set_wheel_accel(1.5, 1.5);
 					//Spur_stop();
+					printf("stop\n");
 					before_state = 10;
 				}
 
@@ -316,6 +318,7 @@ int main(int argc, _TCHAR* argv[])
 				if (stanby_stop_count > 100){
 					//さらに5秒間信号がなければ信号を送る
 					Spur_stop();
+					printf("it stop i put signal\n");
 					stanby_stop_count = 0;
 				}
 				stanby_stop_count++;

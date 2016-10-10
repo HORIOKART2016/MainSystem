@@ -48,11 +48,17 @@ int initSpur(void){
 
 	std::cout << "Spur initialized\n\n";
 
-	Spur_set_vel(vel / 3600);		//速度0.3m/sec
+	/*Spur_set_vel(vel / 3600);		//速度0.3m/sec
 	Spur_set_accel(acc / 3600);	//加速度（m/s/s）
 	Spur_set_angvel(90 * PI / 180);	//角速度（rad/s)
 	Spur_set_angaccel(180 * PI / 180);		//角加速度（rad/s/s)
+	*/
 
+	Spur_set_vel(0.3);		//速度0.3m/sec
+	Spur_set_accel(1.0);	//加速度（m/s/s）
+	Spur_set_angvel(1.5);	//角速度（rad/s)
+	Spur_set_angaccel(2.0);		//角加速度（rad/s/s)
+	
 	//トルク記録用のファイルオーぷん
 	trq = fopen(torq_record, "w");
 	fprintf(trq, "time,fase,right_torque,left_torque,x,y,th\n");
@@ -102,10 +108,11 @@ void EmergencyButtonState(double x, double y, double th){
 
 	YP_get_wheel_vel(&RightAngVel, &LeftAngVel);
 	
-	Avel = (RightAngVel + LeftAngVel) / 2;
+	Avel = (abs(RightAngVel) + abs(LeftAngVel)) / 2;
 
 	//回転数が非常に小さい場合にループに入る
-	while(Avel < 0.001){
+	while(abs(Avel) < 0.00001){
+		std::cout << Avel;
 		std::cout << "emergency stop?\n";
 		emergency_time_count++;
 		if (emergency_time_count>10){
@@ -121,7 +128,7 @@ void EmergencyButtonState(double x, double y, double th){
 			break;
 		}
 		
-		Sleep(100);
+		Sleep(1000);
 
 	}
 
@@ -230,7 +237,7 @@ void RunControl_mainloop(void){
 		while (!Spur_near_ang_GL(tar_th_GL, 0.1)){
 			
 			//到達するまでは障害物検知・緊急停止・トルク計測のみを行う
-			EmergencyButtonState(tar_x_LC, tar_y_LC, tar_th_LC);
+			//EmergencyButtonState(tar_x_LC, tar_y_LC, tar_th_LC);
 			
 			//トルクの計測（お試し)
 			RecordTorq(num);

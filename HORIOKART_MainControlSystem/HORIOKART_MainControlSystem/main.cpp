@@ -19,7 +19,7 @@ const char *routefile = "SampleRoute.csv";
 //const char *routefile = "../../TeachingSystem_HORIOKART/TeachingSystem_HORIOKART/SampleRoute.csv";
 FILE *rt;
 
-#define vel 3000		//最高速度(m/h)
+#define vel 2500		//最高速度(m/h)
 #define acc	1500		//最大加速度(m/h/s)
 
 //試しに時間計測してみる
@@ -30,6 +30,9 @@ LARGE_INTEGER start, now;
 //試しにトルク記録してみる
 FILE *trq;
 const char *torq_record = "TorqRecord.csv";
+
+extern int init_URG();			//urgのinitialize
+extern int obstacle_detection();
 
 
 //ypspurとの通信の初期化
@@ -59,10 +62,7 @@ int initSpur(void){
 	Spur_set_angvel(1.5);	//角速度（rad/s)
 	Spur_set_angaccel(2.0);		//角加速度（rad/s/s)
 	
-	//トルク記録用のファイルオーぷん
-	trq = fopen(torq_record, "w");
-	fprintf(trq, "time,fase,right_torque,left_torque,x,y,th\n");
-
+	
 	return 0;
 }
 
@@ -97,6 +97,60 @@ int getArduinoHandle(HANDLE& hComm){
 }
 
 
+int initialize(){
+
+	//経路データを開く
+	if ((rt = fopen(routefile, "r")) == NULL){
+		//出来れば1度読みこんで有効な経路が入っているかどうかを確認する（今後の課題）
+
+		printf("Can't open Route file.....\n");
+		return 1;
+	}
+
+
+	//バックグラウンドでコントローラを起動しておく
+	if (system("start ../Debug/MS_Controller.exe")){
+		std::cout << "controller open error....\n";
+	}
+	else{ std::cout << "cotroller Open\n\n"; }
+
+
+
+	//障害物検知用のURGとの通信の開始
+	if (init_URG()){
+		std::cout << "URG Error...\n";
+		return 1;
+	}
+	else{
+		std::cout << "URG for Detect : Open\n\n";
+	}
+
+
+
+	//YPSpurとの通信を開始する
+	if (initSpur())
+	{
+		return 1;
+	}
+
+
+
+	//トルク記録用のファイルオープン
+	trq = fopen(torq_record, "w");
+	fprintf(trq, "TimeStamp,fase,mode,right_torque,left_torque,x,y,th,xLC,y_LC,th_LC\n");
+
+
+
+
+	return 0;
+
+
+
+}
+
+/*------ここまでがinitialize------*/
+
+
 
 //非常停止の判断する関数
 //(非常停止の指令は別のプログラムから出される)
@@ -111,7 +165,7 @@ void EmergencyButtonState(double x, double y, double th){
 	Avel = (abs(RightAngVel) + abs(LeftAngVel)) / 2;
 
 	//回転数が非常に小さい場合にループに入る
-	while(abs(Avel) < 0.00001){
+	while(Avel < 0.001){
 		std::cout << Avel;
 		std::cout << "emergency stop?\n";
 		emergency_time_count++;
@@ -123,7 +177,7 @@ void EmergencyButtonState(double x, double y, double th){
 			getchar();
 
 			//再開する場合サイド指令を送る
-			Spur_line_LC(x, y, th);
+			Spur_line_GL(x, y, th);
 
 			break;
 		}
@@ -135,23 +189,47 @@ void EmergencyButtonState(double x, double y, double th){
 }
 
 
+
 //回避不能の障害物に対するループ
 int Unvoidable_Obstacle(){
 
 
 	Spur_stop();		//回避不能の障害物を発見した場合直ちに停止する
 
-	int obstacle=8;
+	int obstacle_state=8;
+
+	std::cout << "Detect obstacle!!\n\n";
 
 	while (1){
 		//障害物の確認
+		obstacle_state = obstacle_detection();
+
 		//obstacle=detectObstacle;
-		if (obstacle!=8){
-			//回避不能の障害物がなくなるとその位置のステータスを返す
-			return obstacle;
+		if (obstacle_state!=8){
+			break;
 		}
 		Sleep(100);
 	}
+
+	std::cout << "Obstacle is cleared \n\n";
+	return 0;
+
+}
+
+//障害物検知
+int run_Obstacledetection(double x, double y, double th){
+	
+	int obstacle_state;
+
+	obstacle_state = obstacle_detection();	//障害物のステータスの取得
+	
+	//回避不能の障害物を検知したとき停止してループに突入する
+	if (obstacle_state == 8){
+		Unvoidable_Obstacle(); 
+		Spur_line_GL(x, y, th);
+	}
+	
+	return 0;
 
 }
 
@@ -159,21 +237,22 @@ int Unvoidable_Obstacle(){
 //試しにトルクを取得してみる
 //とりあえずはcsvにためるだけ
 //何かに使うかもしれない(空転検知等)
-void RecordTorq(int num){
+void RecordTorq(int num,int mode){
 	
 	double R_torq, L_torq,x,y,th;
+	double x_LC, y_LC, th_LC;
 
 	YP_get_wheel_torque(&R_torq, &L_torq);
 	Spur_get_pos_GL(&x, &y, &th);
+	Spur_get_pos_LC(&x_LC, &y_LC, &th_LC);
 
 	QueryPerformanceCounter(&now);
 
-	fprintf(trq, "%lf,%d,%lf,%lf,%lf,%lf,%lf\n", (double)((now.QuadPart - start.QuadPart) / freq.QuadPart), num, R_torq, L_torq, x, y, th);
+	fprintf(trq, "%lf,%d,%d,%lf,%lf,%lf,%lf,%lf%lf,%lf,%lf\n", (((double)now.QuadPart - (double)start.QuadPart) / (double)freq.QuadPart),
+																							num, mode, R_torq, L_torq, x, y, th, x_LC, y_LC, th_LC);
 
 
 }
-
-
 
 
 //走行制御用のメインループ
@@ -217,8 +296,7 @@ void RunControl_mainloop(void){
 		
 		//目標点の読み込み
 		sscanf(buf, "%d,%d,%lf,%lf,%lf,%lf,%lf", &num, &mode, &tar_x_GL, &tar_y_GL, &tar_th_GL, &PassibleRange_right, &PassibleRange_left);
-
-
+		
 		std::cout << "num:" << num << "\n";
 		std::cout << "target:" << tar_x_GL << "," << tar_y_GL << "," << tar_th_GL << "\n";
 
@@ -237,10 +315,13 @@ void RunControl_mainloop(void){
 		while (!Spur_near_ang_GL(tar_th_GL, 0.1)){
 			
 			//到達するまでは障害物検知・緊急停止・トルク計測のみを行う
-			//EmergencyButtonState(tar_x_LC, tar_y_LC, tar_th_LC);
+			EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL);
 			
+			//障害物検知
+			run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
+
 			//トルクの計測（お試し)
-			RecordTorq(num);
+			RecordTorq(num,1);
 			
 			//回避指令
 
@@ -252,7 +333,7 @@ void RunControl_mainloop(void){
 		//角度が到達したらLCをセットする
 		Spur_get_pos_GL(&x_GL, &y_GL, &th_GL);
 		Spur_set_pos_LC(x_GL - before_x_GL, y_GL - before_y_GL, tar_th_GL - th_GL);		//角度の計算が？
-		
+		std::cout << "LC Reset!!\n";
 
 
 
@@ -260,18 +341,16 @@ void RunControl_mainloop(void){
 		while (!Spur_over_line_LC(tar_x_LC - 0.3, tar_y_LC, tar_th_LC)){
 		
 			//トルクの計測（お試し)
-			RecordTorq(num);
+			RecordTorq(num,2);
 			
-			//ここに各センサからのフィードバックを入れる
+			//各センサからのステータス
 			
 			//緊急停止の状態取得
 			EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL);
 			
 			//障害物の位置検知
-			//Obstacle_state=detectObstacle();
-			if (Obstacle_state == 8){
-				Spur_stop();
-			}
+			run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
+
 
 			
 			//左右の道幅（リミット）の取得（100ループに一回）
@@ -315,31 +394,14 @@ void RunControl_mainloop(void){
 
 int main(void)
 {
+	int ret;
+
 	QueryPerformanceFrequency(&freq);
 
-	//経路データを開く
-	if ((rt = fopen(routefile, "r")) == NULL){
-		//出来れば1度読みこんで有効な経路が入っているかどうかを確認する（今後の課題）
+	ret = initialize();
 
-		printf("Can't open Route file.....\n");
-		return -1;
-	}
-
-
-	//バックグラウンドでコントローラは起動しておく
-	if (system("start ../Debug/MS_Controller.exe")){
-		std::cout << "controller open error....\n";
-	}
-	else{ std::cout << "cotroller Open\n"; }
-	
-	//ここに障害物検知用のURGのハンドル等が入る
-
-
-
-	//YPSpurとの通信を開始する
-	if (initSpur())
-	{
-		return(-1);
+	if (ret != 0){
+		return 1;
 	}
 
 	//キー入力を待つ

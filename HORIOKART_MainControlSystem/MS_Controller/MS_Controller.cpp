@@ -145,7 +145,7 @@ int main(int argc, _TCHAR* argv[])
 
 
 	//ループ内でArduinoと通信を行いボタンのステータスを取得しモータードライバーに指令を送る
-
+	printf("loot start\n");
 	while (1){
 
 		//arduinoからステータスを取得
@@ -159,16 +159,15 @@ int main(int argc, _TCHAR* argv[])
 		state = (int)arduino_state[0];
 		//printf("%d\n", (int)arduino_state[0]);
 		
-		if (before_state == 99){
-			if (state != 99){
-				Spur_stop();
-				printf("Emergency\n");
+		/*if (state == 99){
+			Spur_stop();
+			printf("Emergency\n");
 				//Spur_unfreeze();
-			}
-		}
+			
+		}*/
 
 		//非常停止ボタンが押されているときは直ちに停止信号を送る
-	/*	else if (state == 99){
+		if (state == 99){
 				
 			//Spur_freeze();
 			Spur_stop();
@@ -176,7 +175,7 @@ int main(int argc, _TCHAR* argv[])
 			before_state = 99;
 			Sleep(1000);
 			
-		}*/
+		}
 		else{
 
 			read_states(state, button_state);
@@ -268,7 +267,7 @@ int main(int argc, _TCHAR* argv[])
 			//左に曲がるように両輪を逆回転
 			else if (button_state[2] == 1){
 				if (before_state != 8){
-					YP_wheel_vel(-ang_vel, -ang_vel);
+					YP_wheel_vel(-ang_vel/2, -ang_vel/2);
 					//printf("status update\nleft\n");
 				}
 				before_state = 8;
@@ -276,7 +275,7 @@ int main(int argc, _TCHAR* argv[])
 			//right
 			else if (button_state[3] == 1){
 				if (before_state != 9){
-					YP_wheel_vel(ang_vel, ang_vel);
+					YP_wheel_vel(ang_vel/2, ang_vel/2);
 					//printf("status update\nright\n");
 				}
 

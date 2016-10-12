@@ -15,7 +15,7 @@
 
 
 //ルートのファイル名
-const char *routefile = "SampleRoute.csv";
+const char *routefile = "SampleRoute2.csv";
 //const char *routefile = "../../TeachingSystem_HORIOKART/TeachingSystem_HORIOKART/SampleRoute.csv";
 FILE *rt;
 
@@ -205,7 +205,7 @@ int Unvoidable_Obstacle(){
 		obstacle_state = obstacle_detection();
 
 		//obstacle=detectObstacle;
-		if (obstacle_state!=8){
+		if (obstacle_state != 8 && obstacle_state != 2 && obstacle_state != 4 && obstacle_state != 6 && obstacle_state != 7){
 			break;
 		}
 		Sleep(100);
@@ -222,13 +222,13 @@ int run_Obstacledetection(double x, double y, double th){
 	int obstacle_state;
 
 	obstacle_state = obstacle_detection();	//障害物のステータスの取得
-	
+	std::cout << obstacle_state << "\n";
 	//回避不能の障害物を検知したとき停止してループに突入する
-	if (obstacle_state == 8){
+	if (obstacle_state == 8 || obstacle_state == 2 || obstacle_state == 4 || obstacle_state == 6 || obstacle_state == 7 ){
 		Unvoidable_Obstacle(); 
 		Spur_line_GL(x, y, th);
 	}
-	
+
 	return 0;
 
 }

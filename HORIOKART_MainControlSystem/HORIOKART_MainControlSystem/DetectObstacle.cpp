@@ -18,14 +18,14 @@ int init_URG(){
 
 	int ret;
 
-	const char connect_device[] = "COM13";
+	const char connect_device[] = "COM6";
 	const long connect_baudrate = 115200;
 
 	// \~japanese センサに対して接続を行う。
 	ret = urg_open(&urg, URG_SERIAL, connect_device, connect_baudrate);
 	// \todo check error code
 	if (ret = !0)
-		return 1;
+		//return 1;
 		
 
 
@@ -64,7 +64,7 @@ int obstacle_detection()
 	{
 		for (i = 0; i <y_division * 2; i++)
 		{
-			p_data[i][j] = 2;
+			p_data[i][j] = 0;
 		}
 
 	}
@@ -86,7 +86,7 @@ int obstacle_detection()
 		length = length_data[i];
 		// \todo check length is valid
 
-		if ((length > min_distance) && (length < max_distance))
+		if ((length > min_distance) && (length < 4000))
 		{
 			if (radian<M_PI / 2 && radian>-M_PI / 2)
 			{
@@ -112,8 +112,8 @@ int obstacle_detection()
 							{
 
 
-								if (old_border_y >= 0 && p_data[(int)old_border_y][(int)old_border_x] == 2)
-									p_data[(int)old_border_y][(int)old_border_x] = 0;
+								//if (old_border_y >= 0 && p_data[(int)old_border_y][(int)old_border_x] == 2)
+									//p_data[(int)old_border_y][(int)old_border_x] = 0;
 							}
 							old_border_y = border_y;
 							old_border_x--;
@@ -133,8 +133,8 @@ int obstacle_detection()
 							for (old_border_y = floor(old_border_y); old_border_y >= floor(border_y); old_border_y--)
 							{
 
-								if (old_border_y <= 39 && p_data[(int)old_border_y][(int)old_border_x] == 2)
-									p_data[(int)old_border_y][(int)old_border_x] = 0;
+								//if (old_border_y <= 39 && p_data[(int)old_border_y][(int)old_border_x] == 2)
+									//p_data[(int)old_border_y][(int)old_border_x] = 0;
 							}
 							old_border_y = border_y;
 							old_border_x--;
@@ -156,7 +156,7 @@ int obstacle_detection()
 							if (p_data[(int)old_border_y][(int)old_border_x] == 2)
 							{
 
-								p_data[(int)old_border_y][(int)old_border_x] = 0;
+								//p_data[(int)old_border_y][(int)old_border_x] = 0;
 							}
 						}
 					}
@@ -173,7 +173,7 @@ int obstacle_detection()
 								if (old_border_x <= 19 && p_data[(int)old_border_y][(int)old_border_x] == 2)
 								{
 
-									p_data[(int)old_border_y][(int)old_border_x] = 0;
+									//p_data[(int)old_border_y][(int)old_border_x] = 0;
 								}
 
 							}
@@ -195,7 +195,7 @@ int obstacle_detection()
 								if (old_border_x <= 19 && p_data[(int)old_border_y][(int)old_border_x] == 2)
 								{
 
-									p_data[(int)old_border_y][(int)old_border_x] = 0;
+									//p_data[(int)old_border_y][(int)old_border_x] = 0;
 								}
 
 							}
@@ -212,6 +212,11 @@ int obstacle_detection()
 		}
 
 	}
+	/*
+	printf("\n");
+	for (int j = 0; j < 20; j++)
+		for (int i = 0; i < 40; i++)
+			printf("%d,", p_data[i][j]);*/
 
 	int sl_2 = 10;	//探索領域の奥行き
 	int sr_2 = 5;	//探索領域の幅(左右片側)

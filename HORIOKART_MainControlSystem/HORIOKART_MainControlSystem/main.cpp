@@ -34,6 +34,7 @@ const char *torq_record = "TorqRecord.csv";
 extern int init_URG();			//urgのinitialize
 extern int obstacle_detection();
 
+#define detect 0			//1で有効　0無効
 
 //ypspurとの通信の初期化
 //ypspur coordinaterとの通信を開始する
@@ -60,7 +61,7 @@ int initSpur(void){
 	Spur_set_vel(0.3);		//速度0.3m/sec
 	Spur_set_accel(1.0);	//加速度（m/s/s）
 	Spur_set_angvel(1.5);	//角速度（rad/s)
-	Spur_set_angaccel(2.0);		//角加速度（rad/s/s)
+	Spur_set_angaccel(0.5);		//角加速度（rad/s/s)
 	
 	
 	return 0;
@@ -222,7 +223,7 @@ int run_Obstacledetection(double x, double y, double th){
 	int obstacle_state;
 
 	obstacle_state = obstacle_detection();	//障害物のステータスの取得
-	std::cout << obstacle_state << "\n";
+	//std::cout << obstacle_state << "\n";
 	//回避不能の障害物を検知したとき停止してループに突入する
 	if (obstacle_state == 8 || obstacle_state == 2 || obstacle_state == 4 || obstacle_state == 6 || obstacle_state == 7 ){
 		Unvoidable_Obstacle(); 
@@ -318,7 +319,8 @@ void RunControl_mainloop(void){
 			EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL);
 			
 			//障害物検知
-			run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
+			if (detect)
+				run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
 
 			//トルクの計測（お試し)
 			RecordTorq(num,1);
@@ -350,7 +352,8 @@ void RunControl_mainloop(void){
 			EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL);
 			
 			//障害物の位置検知
-			run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
+			if (detect)
+				run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
 
 
 			

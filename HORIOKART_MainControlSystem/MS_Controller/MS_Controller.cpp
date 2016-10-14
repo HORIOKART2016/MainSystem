@@ -204,7 +204,7 @@ int main(int argc, _TCHAR* argv[])
 			//¶•ûŒü‚É“à‘¤‚ÆŠO‘¤‚ÌÔ—Ö‚Ì‘¬“x‚ğ1F2‚É
 			else if ((button_state[0] == 1) && (button_state[2] == 1)){
 				if (before_state != 1){
-					YP_wheel_vel(-ang_vel / 2, ang_vel);
+					YP_wheel_vel(-ang_vel , ang_vel/2);
 					//printf("status update\nfront/right\n");
 				}
 
@@ -214,7 +214,7 @@ int main(int argc, _TCHAR* argv[])
 			//front/right
 			else if ((button_state[0] == 1) && (button_state[3] == 1)){
 				if (before_state != 2){
-					YP_wheel_vel(-ang_vel, ang_vel / 2);
+					YP_wheel_vel(-ang_vel/2, ang_vel);
 					//printf("status update\nfront/right\n");
 				}
 

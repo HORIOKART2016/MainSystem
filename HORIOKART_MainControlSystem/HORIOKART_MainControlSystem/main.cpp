@@ -318,7 +318,7 @@ void RunControl_mainloop(void){
 			EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL);
 			
 			//障害物検知
-//			run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
+			run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
 
 			//トルクの計測（お試し)
 			RecordTorq(num,1);
@@ -337,6 +337,7 @@ void RunControl_mainloop(void){
 
 
 
+
 		//到達したかのループ　:　少し手前で曲がり始める
 		while (!Spur_over_line_LC(tar_x_LC - 0.3, tar_y_LC, tar_th_LC)){
 		
@@ -349,7 +350,7 @@ void RunControl_mainloop(void){
 			EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL);
 			
 			//障害物の位置検知
-//			run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
+			run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
 
 
 			

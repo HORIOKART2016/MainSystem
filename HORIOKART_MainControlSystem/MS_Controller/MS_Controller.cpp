@@ -130,8 +130,8 @@ int main(int argc, _TCHAR* argv[])
 	if (initSpur())
 		return -1;			//ypspurの初期化
 
-	getArduinoHandle(hCom);		//Arduinoのハンドルを取得する
-
+	if (getArduinoHandle(hCom))		//Arduinoのハンドルを取得する
+		return -1;
 
 
 	YP_set_wheel_vel((1000 * MAX_VEL / 3600) / (TIRE_R / 2), (1000 * MAX_VEL / 3600) / (TIRE_R / 2));

@@ -15,7 +15,7 @@
 
 
 //ルートのファイル名
-const char *routefile = "SampleRouteOut.csv";
+const char *routefile = "SampleRouteOut2.csv";
 //const char *routefile = "../../TeachingSystem_HORIOKART/TeachingSystem_HORIOKART/SampleRoute.csv";
 FILE *rt;
 
@@ -60,8 +60,8 @@ int initSpur(void){
 
 	Spur_set_vel(0.3);		//速度0.3m/sec
 	Spur_set_accel(1.0);	//加速度（m/s/s）
-	Spur_set_angvel(1.5);	//角速度（rad/s)
-	Spur_set_angaccel(0.5);		//角加速度（rad/s/s)
+	Spur_set_angvel(0.5);	//角速度（rad/s)
+	Spur_set_angaccel(1.5);		//角加速度（rad/s/s)
 	
 	
 	return 0;
@@ -295,7 +295,7 @@ void RunControl_mainloop(void){
 	double x_GL = 0.0f, y_GL = 0.0f, th_GL = 0.0f;
 	double x_LC = 0.0f, y_LC = 0.0f, th_LC = 0.0f;
 
-
+	int over = 0;
 
 	//各座標系を原点に設定
 	Spur_set_pos_GL(0.0, 0.0, 0.0);
@@ -346,6 +346,13 @@ void RunControl_mainloop(void){
 			
 			//回避指令
 
+
+			if (Spur_over_line_GL(tar_x_GL, tar_y_GL, tar_th_GL))
+			{
+				over = 1;
+				break;
+			}
+
 			Sleep(10);
 		}
 	
@@ -357,36 +364,37 @@ void RunControl_mainloop(void){
 		std::cout << "LC Reset!!\n";
 
 
+		if (over == 0){
+
+			//到達したかのループ　:　少し手前で曲がり始める
+			//		while (!Spur_over_line_LC(tar_x_LC - 0.3, tar_y_LC, tar_th_LC)){
+			while (!Spur_over_line_LC(tar_x_LC, tar_y_LC, tar_th_LC)){
+
+				//トルクの計測（お試し)
+				RecordTorq(num, 2);
+
+				//各センサからのステータス
+
+				//緊急停止の状態取得：緊急停止中にqが押されると1が返され処理を終了する
+				if (EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL))
+					return;
+
+				//障害物の位置検知
+				if (detect)
+					run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
 
 
-		//到達したかのループ　:　少し手前で曲がり始める
-		while (!Spur_over_line_LC(tar_x_LC - 0.3, tar_y_LC, tar_th_LC)){
-		
-			//トルクの計測（お試し)
-			RecordTorq(num,2);
-			
-			//各センサからのステータス
-			
-			//緊急停止の状態取得：緊急停止中にqが押されると1が返され処理を終了する
-			if(EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL))
-				return;
-			
-			//障害物の位置検知
-			if (detect)
-				run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
+
+				//左右の道幅（リミット）の取得（100ループに一回）
+				//detectLoadLimit();
 
 
-			
-			//左右の道幅（リミット）の取得（100ループに一回）
-			//detectLoadLimit();
-					
+				//駆動指令を修正する場合の動作をここに挿入
 
-			//駆動指令を修正する場合の動作をここに挿入
+				Sleep(10);
+			}
 
-			Sleep(10);
 		}
-
-
 
 
 
@@ -405,6 +413,7 @@ void RunControl_mainloop(void){
 		before_th_GL = tar_th_GL;
 
 		//次の経路へ
+		over = 0;
 	}
 
 	//すべての経路が終了するとここに到達する

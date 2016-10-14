@@ -152,10 +152,18 @@ int initialize(){
 /*------ここまでがinitialize------*/
 
 
+void finalise(void){
+
+	//デバッグ用
+	//トルク計測ファイルの保存
+	fclose(trq);
+
+}
+
 
 //非常停止の判断する関数
 //(非常停止の指令は別のプログラムから出される)
-void EmergencyButtonState(double x, double y, double th){
+int EmergencyButtonState(double x, double y, double th){
 	
 	double RightAngVel, LeftAngVel;
 	double Avel;
@@ -175,7 +183,13 @@ void EmergencyButtonState(double x, double y, double th){
 
 			std::cout << "I think emergency stop now!!\n";
 			std::cout << "If start again, Please hit key!!\n";
-			getchar();
+			
+			if (getchar() == 'q')
+			{
+				finalise();
+				std::cout << "file saved";
+				return 1;
+			}
 
 			//再開する場合サイド指令を送る
 			Spur_line_GL(x, y, th);
@@ -186,6 +200,7 @@ void EmergencyButtonState(double x, double y, double th){
 		Sleep(1000);
 
 	}
+	return 0;
 
 }
 
@@ -316,7 +331,11 @@ void RunControl_mainloop(void){
 		while (!Spur_near_ang_GL(tar_th_GL, 0.1)){
 			
 			//到達するまでは障害物検知・緊急停止・トルク計測のみを行う
-			EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL);
+			if (EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL)){
+				//緊急停止中にqが入力されると1が返され処理を終了する
+				return;
+			}
+
 			
 			//障害物検知
 			if (detect)
@@ -348,8 +367,9 @@ void RunControl_mainloop(void){
 			
 			//各センサからのステータス
 			
-			//緊急停止の状態取得
-			EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL);
+			//緊急停止の状態取得：緊急停止中にqが押されると1が返され処理を終了する
+			if(EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL))
+				return;
 			
 			//障害物の位置検知
 			if (detect)
@@ -392,6 +412,10 @@ void RunControl_mainloop(void){
 
 	Spur_stop();
 
+
+	//終了処理
+	finalise();
+
 }
 
 
@@ -415,10 +439,6 @@ int main(void)
 	//走行制御ループに突入
 	RunControl_mainloop();
 
-
-	//デバッグ用
-	//トルク計測ファイルの保存
-	fclose(trq);
 
 	return 0;
 }

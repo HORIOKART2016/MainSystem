@@ -15,7 +15,7 @@
 
 
 //ルートのファイル名
-const char *routefile = "SampleRoute2.csv";
+const char *routefile = "SampleRouteOut.csv";
 //const char *routefile = "../../TeachingSystem_HORIOKART/TeachingSystem_HORIOKART/SampleRoute.csv";
 FILE *rt;
 
@@ -318,7 +318,7 @@ void RunControl_mainloop(void){
 			EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL);
 			
 			//障害物検知
-			run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
+//			run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
 
 			//トルクの計測（お試し)
 			RecordTorq(num,1);
@@ -349,7 +349,7 @@ void RunControl_mainloop(void){
 			EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL);
 			
 			//障害物の位置検知
-			run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
+//			run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
 
 
 			

@@ -27,7 +27,7 @@ mode	1:íºêi
 #define COMPORT "\\\\.\\COM15"
 
 
-const char *filename = "SampleRoute.csv";
+const char *filename = "SampleRouteOut.csv";
 
 
 

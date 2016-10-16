@@ -97,7 +97,9 @@ int main(int argc, _TCHAR* argv[])
 		std::cout << "controller open error....\n";
 	}
 
-	std::cout << "start\n";
+	std::cout << "hit key to start\n";
+	getchar();
+	
 	initSpur();
 
 	Spur_set_pos_GL(0.0, 0.0, 0.0);

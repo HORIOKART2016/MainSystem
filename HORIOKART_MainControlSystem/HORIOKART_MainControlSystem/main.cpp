@@ -11,11 +11,12 @@
 #define PI 3.14159265359
 
 //コントローラ用ArduinoのCOMポートの指定
-#define COMPORT "\\\\.\\COM15"
+#define COMPORT "\\\\.\\COM17"
+#define Euler_COM "\\\\.\\COM16"
 
 
 //ルートのファイル名
-const char *routefile = "SampleRouteOut2.csv";
+const char *routefile = "SampleRoute1020.csv";
 //const char *routefile = "../../TeachingSystem_HORIOKART/TeachingSystem_HORIOKART/SampleRoute.csv";
 FILE *rt;
 
@@ -33,6 +34,10 @@ const char *torq_record = "TorqRecord.csv";
 
 extern int init_URG();			//urgのinitialize
 extern int obstacle_detection();
+
+
+extern int init_Euler();//9軸センサのイニシャライズ
+extern int CorrectTilt();
 
 #define detect 0			//1で有効　0無効
 
@@ -118,7 +123,7 @@ int initialize(){
 
 
 	//障害物検知用のURGとの通信の開始
-	if (init_URG()){
+	if (0){//5init_URG()){
 		std::cout << "URG Error...\n";
 		return 1;
 	}
@@ -134,7 +139,10 @@ int initialize(){
 		return 1;
 	}
 
-
+	if (init_Euler())
+	{
+		return 1;
+	}
 
 	//トルク記録用のファイルオープン
 	trq = fopen(torq_record, "w");
@@ -264,7 +272,7 @@ void RecordTorq(int num,int mode){
 
 	QueryPerformanceCounter(&now);
 
-	fprintf(trq, "%lf,%d,%d,%lf,%lf,%lf,%lf,%lf%lf,%lf,%lf\n", (((double)now.QuadPart - (double)start.QuadPart) / (double)freq.QuadPart),
+	fprintf(trq, "%lf,%d,%d,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", (((double)now.QuadPart - (double)start.QuadPart) / (double)freq.QuadPart),
 																							num, mode, R_torq, L_torq, x, y, th, x_LC, y_LC, th_LC);
 
 
@@ -287,7 +295,8 @@ void RunControl_mainloop(void){
 	double tar_x_LC, tar_y_LC, tar_th_LC;
 	//前の点の座標を記録
 	double before_x_GL = 0.0f, before_y_GL = 0.0f, before_th_GL = 0.0f;
-
+	//修正の境界点
+	double bor_x_GL, bor_y_GL,bor_length;
 	//左右のLCの値(ｙ)の制限 左：正（+）　右：負（-）
 	double PassibleRange_left = 1.0, PassibleRange_right = -1.0;
 		
@@ -320,15 +329,18 @@ void RunControl_mainloop(void){
 		//駆動指令
 		Spur_line_GL(tar_x_GL, tar_y_GL, tar_th_GL);
 
+		//
+		bor_x_GL = 2.0, bor_y_GL = 0;
+
 		//LCでの目標座標も取得しておく
 		tar_x_LC = tar_x_GL - before_x_GL;
-		tar_y_LC = tar_y_GL - before_y_GL;
+		tar_y_LC = 0.0;		 //tar_y_GL - before_y_GL;
 		tar_th_LC = 0.0;
 
-
-
+		
+		std::cout << tar_x_LC << "," << tar_y_LC << "\n";
 		//直線上に到達したかのループ
-		while (!Spur_near_ang_GL(tar_th_GL, 0.1)){
+		while (!Spur_near_ang_GL(tar_th_GL, 0.3)){
 			
 			//到達するまでは障害物検知・緊急停止・トルク計測のみを行う
 			if (EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL)){
@@ -349,12 +361,15 @@ void RunControl_mainloop(void){
 
 			if (Spur_over_line_GL(tar_x_GL, tar_y_GL, tar_th_GL))
 			{
+				std::cout << "over";
 				over = 1;
 				break;
 			}
 
 			Sleep(10);
 		}
+
+		
 	
 
 
@@ -363,6 +378,7 @@ void RunControl_mainloop(void){
 		Spur_set_pos_LC(x_GL - before_x_GL, y_GL - before_y_GL, tar_th_GL - th_GL);		//角度の計算が？
 		std::cout << "LC Reset!!\n";
 
+		
 
 		if (over == 0){
 
@@ -370,6 +386,13 @@ void RunControl_mainloop(void){
 			//		while (!Spur_over_line_LC(tar_x_LC - 0.3, tar_y_LC, tar_th_LC)){
 			while (!Spur_over_line_LC(tar_x_LC, tar_y_LC, tar_th_LC)){
 
+				//std::cout << tar_x_LC << "," << tar_y_LC << "\n";
+				Spur_get_pos_GL(&x_GL, &y_GL, &th_GL);
+				Spur_get_pos_LC(&x_LC, &y_LC, &th_LC);
+
+
+				std::cout << "  GL  :" << x_GL << "," << y_GL << "," << th_GL << "\n";
+				std::cout << "  LC  :" << x_LC << "," << y_LC << "," << th_LC << "\n\n";
 				//トルクの計測（お試し)
 				RecordTorq(num, 2);
 
@@ -391,6 +414,25 @@ void RunControl_mainloop(void){
 
 				//駆動指令を修正する場合の動作をここに挿入
 
+
+				//CorrectTilt();
+
+				if (Spur_over_line_LC(bor_x_GL, bor_y_GL, tar_th_LC))
+				{
+					
+					if (tar_x_LC > 0)
+					{
+						bor_x_GL += 2.0;
+					}
+					else
+					{
+						bor_x_GL -= 2.0;
+					}
+					
+					std::cout<<"tar_th_LC" << tar_th_LC<< "\n";
+					Spur_line_LC(bor_x_GL, bor_y_GL, tar_th_LC);
+					
+				}
 				Sleep(10);
 			}
 

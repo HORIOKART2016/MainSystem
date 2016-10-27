@@ -13,9 +13,6 @@
 
 #define PI 3.14159265359
 
-//コントローラ用ArduinoのCOMポートの指定
-#define COMPORT "\\\\.\\COM15"
-
 
 //ルートのファイル名
 const char *routefile = "SampleRouteOut2.csv";
@@ -40,6 +37,8 @@ extern int obstacle_detection();
 extern int CorrectTilt(void);
 
 #define detect 0			//1で有効　0無効
+
+
 
 //ypspurとの通信の初期化
 //ypspur coordinaterとの通信を開始する
@@ -72,35 +71,6 @@ int initSpur(void){
 	return 0;
 }
 
-
-
-//Arduinoのハンドルを取得する
-//使ってない
-int getArduinoHandle(HANDLE& hComm){
-	//シリアルポートを開いてハンドルを取得
-
-	hComm = CreateFile(_T(COMPORT), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-
-	if (hComm == INVALID_HANDLE_VALUE){
-		printf("シリアルポートを開くことができませんでした。");
-		char z;
-		z = getchar();
-		return -1;
-	}
-	//ポートを開けていれば通信設定を行う
-	else
-	{
-		printf("port open\n");
-		DCB lpTest;
-		GetCommState(hComm, &lpTest);
-		lpTest.BaudRate = 9600;
-		lpTest.ByteSize = 8;
-		lpTest.Parity = NOPARITY;
-		lpTest.StopBits = ONESTOPBIT;
-		SetCommState(hComm, &lpTest);
-	}
-	return 0;
-}
 
 
 int initialize(){
@@ -302,6 +272,7 @@ void RunControl_mainloop(void){
 	double x_LC = 0.0f, y_LC = 0.0f, th_LC = 0.0f;
 
 	int over = 0;
+	int online = 0;			//目標点・角度のなす直線上にいるか　　0：false 1:true
 
 	//各座標系を原点に設定
 	Spur_set_pos_GL(0.0, 0.0, 0.0);
@@ -325,65 +296,29 @@ void RunControl_mainloop(void){
 		
 		
 		//LCでの目標座標も取得しておく
-		tar_x_LC = tar_x_GL - before_x_GL;
-		tar_y_LC = tar_y_GL - before_y_GL;
+		tar_x_LC = sqrt((tar_x_GL - before_x_GL)*(tar_x_GL - before_x_GL) + (tar_y_GL - before_y_GL)*(tar_y_GL - before_y_GL));
+		tar_y_LC = 0.0;
 		tar_th_LC = 0.0;
 
 		//
-		tar_th_GL = atan(tar_y_LC / tar_x_LC);
+		tar_th_GL = atan((tar_y_GL - before_y_GL) / (tar_x_GL - before_x_GL));
+		
+		//自己位置のLCのリセット
+		Spur_get_pos_GL(&x_GL,&y_GL,&th_GL);
+		Spur_set_pos_LC(x_GL - tar_x_GL, y_GL - tar_y_GL, th_GL - tar_th_GL);
+
+		//これ以下ではすべてLCで座標を扱う
 
 		//駆動指令
-		Spur_line_GL(tar_x_GL, tar_y_GL, tar_th_GL);
-
-	
-
-
-
-		//直線上に到達したかのループ
-		while (!Spur_near_ang_GL(tar_th_GL, 0.1)){
-			
-			//到達するまでは障害物検知・緊急停止・トルク計測のみを行う
-			if (EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL)){
-				//緊急停止中にqが入力されると1が返され処理を終了する
-				return;
-			}
-			
-			//障害物検知
-			if (detect)
-				run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
-
-			//傾斜の補正
-			CorrectTilt();
-
-
-			//トルクの計測（お試し)
-			RecordTorq(num,1);
-			
-			//回避指令
-
-
-			if (Spur_over_line_GL(tar_x_GL, tar_y_GL, tar_th_GL))
-			{
-				over = 1;
-				break;
-			}
-
-			Sleep(10);
-		}
-	
-
-
-		//角度が到達したらLCをセットする
-		Spur_get_pos_GL(&x_GL, &y_GL, &th_GL);
-		Spur_set_pos_LC(x_GL - before_x_GL, y_GL - before_y_GL, tar_th_GL - th_GL);		//角度の計算が？
-		std::cout << "LC Reset!!\n";
-
-
+		Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
+		
+		
+		
 		if (over == 0){
 
 			//到達したかのループ　:　少し手前で曲がり始める
 			//		while (!Spur_over_line_LC(tar_x_LC - 0.3, tar_y_LC, tar_th_LC)){
-			while (!Spur_over_line_LC(tar_x_LC, tar_y_LC, tar_th_LC)){
+			while (!Spur_over_line_LC(tar_x_LC-0.3, tar_y_LC, tar_th_LC)){
 
 
 
@@ -396,6 +331,11 @@ void RunControl_mainloop(void){
 				//障害物の位置検知
 				if (detect)
 					run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
+
+				//直線状かどうか
+				if (!online){
+					online = Spur_near_ang_LC(tar_th_LC, 0.1);
+				}
 
 
 				//傾斜の補正
@@ -432,6 +372,7 @@ void RunControl_mainloop(void){
 
 		//次の経路へ
 		over = 0;
+		online = 0;
 	}
 
 	//すべての経路が終了するとここに到達する

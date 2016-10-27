@@ -34,7 +34,7 @@ const char *torq_record = "TorqRecord.csv";
 extern int init_URG();			//urgのinitialize
 extern int obstacle_detection();
 
-extern int CorrectTilt(void);
+extern int Euler_state(void);
 
 #define detect 0			//1で有効　0無効
 
@@ -168,7 +168,7 @@ int EmergencyButtonState(double x, double y, double th){
 			}
 
 			//再開する場合サイド指令を送る
-			Spur_line_GL(x, y, th);
+			Spur_line_LC(x, y, th);
 
 			break;
 		}
@@ -218,7 +218,7 @@ int run_Obstacledetection(double x, double y, double th){
 	//回避不能の障害物を検知したとき停止してループに突入する
 	if (obstacle_state == 8 || obstacle_state == 2 || obstacle_state == 4 || obstacle_state == 6 || obstacle_state == 7 ){
 		Unvoidable_Obstacle(); 
-		Spur_line_GL(x, y, th);
+		Spur_line_LC(x, y, th);
 	}
 
 	return 0;
@@ -274,6 +274,9 @@ void RunControl_mainloop(void){
 	int over = 0;
 	int online = 0;			//目標点・角度のなす直線上にいるか　　0：false 1:true
 
+	double border = 2.0;
+
+
 	//各座標系を原点に設定
 	Spur_set_pos_GL(0.0, 0.0, 0.0);
 	Spur_set_pos_LC(0.0, 0.0, 0.0);
@@ -284,7 +287,7 @@ void RunControl_mainloop(void){
 	std::cout << "runcontrol start\n";
 
 
-	//ループの開始
+	//ルートをたどるループの開始
 	while (fgets(buf, 5412, rt) != NULL){
 		
 		//目標点の読み込み
@@ -314,44 +317,47 @@ void RunControl_mainloop(void){
 		
 		
 		
-		if (over == 0){
+	
 
 			//到達したかのループ　:　少し手前で曲がり始める
 			//		while (!Spur_over_line_LC(tar_x_LC - 0.3, tar_y_LC, tar_th_LC)){
-			while (!Spur_over_line_LC(tar_x_LC-0.3, tar_y_LC, tar_th_LC)){
+		while (!Spur_over_line_LC(tar_x_LC - 0.3, tar_y_LC, tar_th_LC)){
+			
+			//各センサからのステータス
 
+			//緊急停止の状態取得：緊急停止中にqが押されると1が返され処理を終了する
+			if (EmergencyButtonState(tar_x_LC, tar_y_LC, tar_th_LC))
+				return;
 
+			//障害物の位置検知
+			if (detect)
+				run_Obstacledetection(tar_x_LC, tar_y_LC, tar_th_LC);
 
-				//各センサからのステータス
-
-				//緊急停止の状態取得：緊急停止中にqが押されると1が返され処理を終了する
-				if (EmergencyButtonState(tar_x_GL, tar_y_GL, tar_th_GL))
-					return;
-
-				//障害物の位置検知
-				if (detect)
-					run_Obstacledetection(tar_x_GL, tar_y_GL, tar_th_GL);
-
-				//直線状かどうか
-				if (!online){
-					online = Spur_near_ang_LC(tar_th_LC, 0.1);
-				}
-
-
-				//傾斜の補正
-				CorrectTilt();
-
-				//左右の道幅（リミット）の取得（100ループに一回）
-				//detectLoadLimit();
-
-				//トルクの計測（お試し)
-				RecordTorq(num, 2);
-
-				//駆動指令を修正する場合の動作をここに挿入
-
-				Sleep(10);
+			//直線状かどうか
+			if (!online){
+				online = Spur_near_ang_LC(tar_th_LC, 0.1);
 			}
 
+
+			//傾斜・回転角の補正
+			Euler_state();
+
+			//左右の道幅（リミット）の取得（100ループに一回）
+			//detectLoadLimit();
+
+			//トルクの計測（お試し)
+			RecordTorq(num, 2);
+
+			//駆動指令を修正する場合の動作をここに挿入
+
+			//2m進む度に駆動指令を入れなおす
+			if (Spur_over_line_LC(border, 0.0, 0.0)){
+				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
+				border = border + 2.0;
+			}
+
+
+			Sleep(10);
 		}
 
 

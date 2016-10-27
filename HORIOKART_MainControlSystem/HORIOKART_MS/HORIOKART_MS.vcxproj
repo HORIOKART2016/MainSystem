@@ -81,7 +81,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="detectLoadEdge.cpp" />
+    <ClCompile Include="detectLoadEdge.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="DetectObstacle.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="CorrectTilt.cpp" />

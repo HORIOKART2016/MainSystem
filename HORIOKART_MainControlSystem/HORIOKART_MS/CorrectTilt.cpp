@@ -17,11 +17,11 @@ using namespace std;
 
 HANDLE EulerhComm = NULL;
 
-HANDLE init_EulerArduino(HANDLE hComm)
+
+HANDLE init_Euler_arduino(int arduinoCOM, HANDLE hComm)
 {
-	//string com = "\\\\.\\COM" + to_string(arduinoCOM);
-	//hComm = CreateFile(_T(com.c_str()), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	hComm = CreateFile(_T("\\\\.\\COM10"), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	string com = "\\\\.\\COM" + to_string(arduinoCOM);
+	hComm = CreateFile(com.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hComm == INVALID_HANDLE_VALUE){
 		printf("シリアルポートを開くことができませんでした。");
 		char z;
@@ -39,22 +39,32 @@ HANDLE init_EulerArduino(HANDLE hComm)
 		lpTest.StopBits = ONESTOPBIT;
 		SetCommState(hComm, &lpTest);
 	}
-	printf("open Euler!!\n");
+	printf("opened!!\n");
 
+	unsigned char	sendbuf[1];
+	int				ret;
+	unsigned long	len;
+	unsigned char	receive_data[30] = {};
+
+	//Sleep(3000);
+
+	// バッファクリア
+	memset(sendbuf, 0x00, sizeof(sendbuf));
+	// パケット作成
+	sendbuf[0] = (unsigned char)1;
+	// 通信バッファクリア
+	PurgeComm(hComm, PURGE_RXCLEAR);
+	// 送信
+	ret = WriteFile(hComm, &sendbuf, 5, &len, NULL);
+
+	memset(receive_data, 0x00, sizeof(receive_data));
+	// 通信バッファクリア
+	PurgeComm(hComm, PURGE_RXCLEAR);
+	// Arduinoからデータを受信
+	ret = ReadFile(hComm, &receive_data, 1, &len, NULL);
+
+	Sleep(3000);
 	return hComm;
-}
-
-int init_Euler(){
-
-	//シリアルポートを開いてハンドルを取得
-	EulerhComm = init_EulerArduino(EulerhComm);
-
-	if (EulerhComm == INVALID_HANDLE_VALUE){
-		return -1;
-	}
-
-	return 0;
-
 }
 
 
@@ -93,14 +103,17 @@ void tile_cal(float Euler[3], double d_t[2])
 		d_t[0] = -acos(x);
 		d_t[1] = asin(z);
 	}
+	printf("%lf", 2 * M_PI - Euler[0]);
 	printf("(Φ,θ) = (%lf,%lf)\n", d_t[0], d_t[1]);
 }
 
-int CorrectTilt(void)
+
+
+void receive_euler(HANDLE hComm, float Euler[3])
 {
 
-
-
+	DWORD start, end;
+	start = GetTickCount();
 	bool isInitialized = false;
 	unsigned char	sendbuf[1];
 	unsigned char	receive_data[30] = {};
@@ -108,35 +121,39 @@ int CorrectTilt(void)
 	float			DL, DR, DIS, ANG;
 	unsigned long	len;
 	char *euler_1, *euler_2, *euler_3;
-	float Euler[3];
 	int i = 0;
 	float			droidOrientation[3];
-	char *ctx;
 
-	Sleep(2000);
 
-	system("cls");
-	//Sleep(5);
+	end = GetTickCount();
+	if ((end - start) < 15)
+	{
+		int sleeptime = 15 - (int)(end - start);
+		Sleep(sleeptime);
+		end = GetTickCount();
+	}
 
-	// ハンドルチェック
-	if (!EulerhComm)	return -1;
+	if (!hComm)	return;
 	// バッファクリア
 	memset(sendbuf, 0x00, sizeof(sendbuf));
 	// パケット作成
 	sendbuf[0] = (unsigned char)1;
 	// 通信バッファクリア
-	PurgeComm(EulerhComm, PURGE_RXCLEAR);
+	PurgeComm(hComm, PURGE_RXCLEAR);
 	// 送信
-	ret = WriteFile(EulerhComm, &sendbuf, 1, &len, NULL);
+	ret = WriteFile(hComm, &sendbuf, 1, &len, NULL);
 
 
 	// バッファクリア
 	memset(receive_data, 0x00, sizeof(receive_data));
 	// 通信バッファクリア
-	PurgeComm(EulerhComm, PURGE_RXCLEAR);
+	PurgeComm(hComm, PURGE_RXCLEAR);
 	// Arduinoからデータを受信
-	ret = ReadFile(EulerhComm, &receive_data, 20, &len, NULL);
+	ret = ReadFile(hComm, &receive_data, 20, &len, NULL);
 	//cout << static_cast<bitset<8>>(receive_data[0]) << "," << static_cast<bitset<8>>(receive_data[1] )<< endl;
+
+
+
 
 
 	//初期化されていなければ初期化(初めのデータを捨てる)
@@ -145,10 +162,11 @@ int CorrectTilt(void)
 		isInitialized = true;
 		//return ;
 	}
-	printf("%s\n", receive_data);
-	euler_1 = strtok_s((char*)receive_data, ",",&ctx);
-	euler_2 = strtok_s(NULL, ",", &ctx);
-	euler_3 = strtok_s(NULL, ",", &ctx);
+
+	printf("%s...\n", receive_data);
+	euler_1 = strtok((char*)receive_data, ",");
+	euler_2 = strtok(NULL, ",");
+	euler_3 = strtok(NULL, ",");
 
 
 	Euler[0] = strtod(euler_1, NULL);
@@ -157,13 +175,41 @@ int CorrectTilt(void)
 	printf("%f\n", Euler[0]);
 	printf("%f\n", Euler[1]);
 	printf("%f\n", Euler[2]);
-	double d_t[2];
+}
 
+HANDLE hComm = NULL;
+
+void init_Euler(void){
+	int arduinoCOM = 71;
+	
+	//シリアルポートを開いてハンドルを取得
+	hComm = init_Euler_arduino(arduinoCOM, hComm);
+}
+
+
+
+float Euler[3];
+double d_t[2];
+
+
+//main
+int Euler_state(void)
+{
+	receive_euler(hComm, Euler);
+	
 
 	tile_cal(Euler, d_t);
 
+	double x, y, rad;
+	
+	//回転角補正
+	Spur_get_pos_GL(&x, &y, &rad);
+	Spur_adjust_pos_GL(x, y, 2 * M_PI - Euler[0]);
+	
+	//傾斜補正
 	Spur_tilt_FS(d_t[0], d_t[1]);
-	return 1;
+
+	return 0;
 }
 
 

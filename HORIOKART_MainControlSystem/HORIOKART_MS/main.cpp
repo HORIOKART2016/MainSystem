@@ -38,7 +38,15 @@ extern int Euler_state(void);
 
 #define detect 0			//1で有効　0無効
 
+extern void Detect_RoadEdge(double *edge);
 
+
+//目的地の座標（LC）
+double tar_x_LC, tar_y_LC, tar_th_LC;
+
+//左右のLCの値(ｙ)の制限 左：正（+）　右：負（-）
+double PassibleRange_left = 1.5, PassibleRange_right = -1.5;
+double RoadEdge_buf1[2] = { 0.0, 0.0 }, RoadEdge_buf2[2] = { 0.0, 0.0 };
 
 //ypspurとの通信の初期化
 //ypspur coordinaterとの通信を開始する
@@ -139,7 +147,7 @@ void finalise(void){
 
 //非常停止の判断する関数
 //(非常停止の指令は別のプログラムから出される)
-int EmergencyButtonState(double x, double y, double th){
+int EmergencyButtonState(void){
 	
 	double RightAngVel, LeftAngVel;
 	double Avel;
@@ -168,7 +176,7 @@ int EmergencyButtonState(double x, double y, double th){
 			}
 
 			//再開する場合サイド指令を送る
-			Spur_line_LC(x, y, th);
+			Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 
 			break;
 		}
@@ -209,7 +217,7 @@ int Unvoidable_Obstacle(){
 }
 
 //障害物検知
-int run_Obstacledetection(double x, double y, double th){
+int run_Obstacledetection(void){
 	
 	int obstacle_state;
 
@@ -218,7 +226,36 @@ int run_Obstacledetection(double x, double y, double th){
 	//回避不能の障害物を検知したとき停止してループに突入する
 	if (obstacle_state == 8 || obstacle_state == 2 || obstacle_state == 4 || obstacle_state == 6 || obstacle_state == 7 ){
 		Unvoidable_Obstacle(); 
-		Spur_line_LC(x, y, th);
+		Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
+	}
+	
+
+	switch (obstacle_state){
+		case 8:
+			Unvoidable_Obstacle();
+			Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
+			break;
+		case 2:
+		case 6:
+			if (abs(PassibleRange_left) < 0.3){
+				Unvoidable_Obstacle();
+				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
+			}
+			else{
+				tar_y_LC = tar_y_LC - 0.5;
+				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
+			}
+		case 4:
+		case 7:
+			if (abs(PassibleRange_right) < 0.3){
+				Unvoidable_Obstacle();
+				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
+			}
+			else{
+				tar_y_LC = tar_y_LC + 0.5;
+				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
+			}
+
 	}
 
 	return 0;
@@ -247,6 +284,44 @@ void RecordTorq(int num,int mode){
 }
 
 
+
+void RoadEdge_syori(void){
+	
+	double RoadEdge[2];
+
+	Detect_RoadEdge(RoadEdge);
+	
+	//例外処理：前２回の結果から1次関数を取得（2個前が0その次が0.5）
+	//その直線との距離を導出し閾値を用いて例外処理
+	//bufは1が手前　2がその0.5ｍ先（こっちが近い）
+
+
+	if ((abs(RoadEdge_buf1[0] - RoadEdge_buf2[1]) > 0.5) && (abs(RoadEdge_buf2[0] - RoadEdge_buf2[1]) > 0.5))
+	{
+		double a, c;
+		a = (RoadEdge_buf2[0] - RoadEdge_buf1[0]) / 0.5;
+		c = RoadEdge_buf1[0];
+		if ((abs(a*RoadEdge[0] - 1.0 + c) / sqrt(a*a + 1)) < 0.5)
+		{
+			PassibleRange_left = RoadEdge[0];
+		}
+		a = (RoadEdge_buf2[1] - RoadEdge_buf1[1]) / 0.5;
+		c = RoadEdge_buf1[1];
+		if ((abs(a*RoadEdge[1] - 1.0 + c) / sqrt(a*a + 1)) < 0.5)
+		{
+			PassibleRange_left = RoadEdge[1];
+		}
+	}
+
+	RoadEdge_buf1[0] = RoadEdge_buf2[0];
+	RoadEdge_buf1[1] = RoadEdge_buf2[1];
+
+	RoadEdge_buf2[0] = RoadEdge[0];
+	RoadEdge_buf2[1] = RoadEdge[1];
+
+}
+
+
 //走行制御用のメインループ
 void RunControl_mainloop(void){
 
@@ -265,7 +340,8 @@ void RunControl_mainloop(void){
 	double before_x_GL = 0.0f, before_y_GL = 0.0f, before_th_GL = 0.0f;
 
 	//左右のLCの値(ｙ)の制限 左：正（+）　右：負（-）
-	double PassibleRange_left = 1.0, PassibleRange_right = -1.0;
+	double PassibleRange_left = 1.5, PassibleRange_right = -1.5;
+	
 		
 	//エンコーダ値取得用の変数
 	double x_GL = 0.0f, y_GL = 0.0f, th_GL = 0.0f;
@@ -274,7 +350,11 @@ void RunControl_mainloop(void){
 	int over = 0;
 	int online = 0;			//目標点・角度のなす直線上にいるか　　0：false 1:true
 
-	double border = 2.0;
+	double border = 0.5;
+
+	int border_count = 0;
+
+	int roadmode;
 
 
 	//各座標系を原点に設定
@@ -291,7 +371,11 @@ void RunControl_mainloop(void){
 	while (fgets(buf, 5412, rt) != NULL){
 		
 		//目標点の読み込み
-		sscanf_s(buf, "%d,%d,%lf,%lf,%lf,%lf,%lf", &num, &mode, &tar_x_GL, &tar_y_GL, &tar_th_GL, &PassibleRange_right, &PassibleRange_left);
+		//文法：番号，ｘ，ｙ，画像処理の有無
+		sscanf_s(buf, "%d,%lf,%lf,%d", &num, &tar_x_GL, &tar_y_GL, &roadmode);
+		
+		
+		tar_th_GL = atan((tar_y_GL - before_y_GL) / (tar_x_GL - before_x_GL));
 		
 		std::cout << "num:" << num << "\n";
 		std::cout << "target:" << tar_x_GL << "," << tar_y_GL << "," << tar_th_GL << "\n";
@@ -304,7 +388,7 @@ void RunControl_mainloop(void){
 		tar_th_LC = 0.0;
 
 		//
-		tar_th_GL = atan((tar_y_GL - before_y_GL) / (tar_x_GL - before_x_GL));
+		
 		
 		//自己位置のLCのリセット
 		Spur_get_pos_GL(&x_GL,&y_GL,&th_GL);
@@ -314,47 +398,59 @@ void RunControl_mainloop(void){
 
 		//駆動指令
 		Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
-		
-		
-		
-	
-
-			//到達したかのループ　:　少し手前で曲がり始める
-			//		while (!Spur_over_line_LC(tar_x_LC - 0.3, tar_y_LC, tar_th_LC)){
+					
 		while (!Spur_over_line_LC(tar_x_LC - 0.3, tar_y_LC, tar_th_LC)){
 			
 			//各センサからのステータス
 
 			//緊急停止の状態取得：緊急停止中にqが押されると1が返され処理を終了する
-			if (EmergencyButtonState(tar_x_LC, tar_y_LC, tar_th_LC))
+			if (EmergencyButtonState())
 				return;
 
 			//障害物の位置検知
 			if (detect)
-				run_Obstacledetection(tar_x_LC, tar_y_LC, tar_th_LC);
+				run_Obstacledetection();
 
 			//直線状かどうか
 			if (!online){
 				online = Spur_near_ang_LC(tar_th_LC, 0.1);
 			}
-
-
+			
 			//傾斜・回転角の補正
 			Euler_state();
 
-			//左右の道幅（リミット）の取得（100ループに一回）
-			//detectLoadLimit();
 
 			//トルクの計測（お試し)
 			RecordTorq(num, 2);
 
 			//駆動指令を修正する場合の動作をここに挿入
+			//0.5m進む度に画像取得・2ｍごとに駆動指令を入れなおす
+			if (Spur_over_line_LC(border, tar_y_LC, tar_th_LC)){
+				border_count++;
+				if (roadmode)
+					RoadEdge_syori();
 
-			//2m進む度に駆動指令を入れなおす
-			if (Spur_over_line_LC(border, 0.0, 0.0)){
-				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
-				border = border + 2.0;
+				//片側に寄ってるとき:目的地のｙ座標を変更して駆動指令を入れなおす
+				if ((abs(PassibleRange_left) > 0.01) && (abs(PassibleRange_left)<0.3)){
+					tar_y_LC = tar_y_LC-0.5;
+					Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
+				}
+				
+				else if ((abs(PassibleRange_right) > 0.01) && (abs(PassibleRange_right)<0.3)){
+					tar_y_LC = tar_y_LC+0.5;
+					Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
+				}
+
+				//2mごとに指令を入れ直す
+				if (border_count > 3){
+					Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
+					border_count = 0;
+				}
+
+				border = border + 0.5;
 			}
+
+
 
 
 			Sleep(10);
@@ -379,6 +475,12 @@ void RunControl_mainloop(void){
 		//次の経路へ
 		over = 0;
 		online = 0;
+		border = 0.5;
+		border_count = 0;
+
+		PassibleRange_left = 0.0;
+		PassibleRange_right = 0.0;
+
 	}
 
 	//すべての経路が終了するとここに到達する

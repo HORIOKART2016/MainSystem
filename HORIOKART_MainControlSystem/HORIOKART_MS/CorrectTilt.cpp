@@ -17,11 +17,12 @@ using namespace std;
 
 HANDLE EulerhComm = NULL;
 
+#define EULERCOM "\\\\.\\COM17"
 
 HANDLE init_Euler_arduino(int arduinoCOM, HANDLE hComm)
 {
-	string com = "\\\\.\\COM" + to_string(arduinoCOM);
-	hComm = CreateFile(com.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	//string com = "\\\\.\\COM" + to_string(arduinoCOM);
+	hComm = CreateFile(LPCWSTR(EULERCOM), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hComm == INVALID_HANDLE_VALUE){
 		printf("シリアルポートを開くことができませんでした。");
 		char z;
@@ -163,10 +164,12 @@ void receive_euler(HANDLE hComm, float Euler[3])
 		//return ;
 	}
 
+	char *ctx;
+
 	printf("%s...\n", receive_data);
-	euler_1 = strtok((char*)receive_data, ",");
-	euler_2 = strtok(NULL, ",");
-	euler_3 = strtok(NULL, ",");
+	euler_1 = strtok_s((char*)receive_data, ",",&ctx);
+	euler_2 = strtok_s(NULL, ",",&ctx);
+	euler_3 = strtok_s(NULL, ",",&ctx);
 
 
 	Euler[0] = strtod(euler_1, NULL);

@@ -89,6 +89,7 @@ int main(int argc, _TCHAR* argv[])
 
 	int num = 0;
 	int ret;
+	int Roadmode;
 
 	FILE *rt;
 
@@ -98,6 +99,7 @@ int main(int argc, _TCHAR* argv[])
 	}
 
 	std::cout << "hit key to start\n";
+	
 	getchar();
 	
 	initSpur();
@@ -109,10 +111,13 @@ int main(int argc, _TCHAR* argv[])
 
 	fopen_s(&rt, filename, "w");
 
+
+	num++;
+
 	while (1){
 		if(getchar()=='q')
 			break;
-
+		
 		Spur_get_pos_GL(&x_GL, &y_GL, &th_GL);
 		Spur_get_pos_LC(&x_LC, &y_LC, &th_LC);
 
@@ -120,13 +125,12 @@ int main(int argc, _TCHAR* argv[])
 		std::cout << "num:" << num << "\n";
 		std::cout << "GL:" << x_GL << "," << y_GL << "," << th_GL << "\n";
 		std::cout << "LC:" << x_LC << "," << y_LC << "," << th_LC << "\n";
+		
+		std::cout << "エッジ検出について\n 0：無効　　１：有効\n";
+		std::cin >> Roadmode;
+	
+		fprintf(rt, "%d,%lf,%lf,%d\n", num, x_GL, y_GL, Roadmode);
 
-		//直進したとき:20cm以上移動した
-		if (sqrt((x_LC*x_LC) + (y_LC*y_LC)) > 0.2){
-			fprintf(rt, "%d,%d,%lf,%lf,%lf\n", num, 1, x_GL, y_GL, th_GL);
-		}
-
-		//回転だけのとき
 
 		num++;
 

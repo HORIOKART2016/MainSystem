@@ -17,14 +17,18 @@ using namespace std;
 
 HANDLE EulerhComm = NULL;
 
-#define EULERCOM "\\\\.\\COM17"
+#define EULERCOM "\\\\.\\COM16"
 
-HANDLE init_Euler_arduino(int arduinoCOM, HANDLE hComm)
+
+
+HANDLE hComm = NULL;
+
+HANDLE init_Euler_arduino( HANDLE hComm)
 {
 	//string com = "\\\\.\\COM" + to_string(arduinoCOM);
-	hComm = CreateFile(LPCWSTR(EULERCOM), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	hComm = CreateFile(_T(EULERCOM), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hComm == INVALID_HANDLE_VALUE){
-		printf("シリアルポートを開くことができませんでした。");
+		printf("EULER:シリアルポートを開くことができませんでした。");
 		char z;
 		z = getchar();
 		return 0;
@@ -104,8 +108,8 @@ void tile_cal(float Euler[3], double d_t[2])
 		d_t[0] = -acos(x);
 		d_t[1] = asin(z);
 	}
-	printf("%lf", 2 * M_PI - Euler[0]);
-	printf("(Φ,θ) = (%lf,%lf)\n", d_t[0], d_t[1]);
+	//printf("%lf", 2 * M_PI - Euler[0]);
+	//printf("(Φ,θ) = (%lf,%lf)\n", d_t[0], d_t[1]);
 }
 
 
@@ -166,7 +170,7 @@ void receive_euler(HANDLE hComm, float Euler[3])
 
 	char *ctx;
 
-	printf("%s...\n", receive_data);
+	//printf("%s...\n", receive_data);
 	euler_1 = strtok_s((char*)receive_data, ",",&ctx);
 	euler_2 = strtok_s(NULL, ",",&ctx);
 	euler_3 = strtok_s(NULL, ",",&ctx);
@@ -175,18 +179,17 @@ void receive_euler(HANDLE hComm, float Euler[3])
 	Euler[0] = strtod(euler_1, NULL);
 	Euler[1] = strtod(euler_2, NULL);
 	Euler[2] = strtod(euler_3, NULL);
-	printf("%f\n", Euler[0]);
-	printf("%f\n", Euler[1]);
-	printf("%f\n", Euler[2]);
+	//printf("%f\n", Euler[0]);
+	//printf("%f\n", Euler[1]);
+	//printf("%f\n", Euler[2]);
 }
 
-HANDLE hComm = NULL;
 
 void init_Euler(void){
-	int arduinoCOM = 71;
+	int arduinoCOM = 16;
 	
 	//シリアルポートを開いてハンドルを取得
-	hComm = init_Euler_arduino(arduinoCOM, hComm);
+	hComm = init_Euler_arduino(hComm);
 }
 
 

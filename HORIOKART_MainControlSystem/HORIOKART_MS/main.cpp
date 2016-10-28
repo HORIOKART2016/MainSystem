@@ -15,7 +15,7 @@
 
 
 //ルートのファイル名
-const char *routefile = "SampleRouteOut2.csv";
+const char *routefile = "SampleRoute1028_1.csv";
 //const char *routefile = "../../TeachingSystem_HORIOKART/TeachingSystem_HORIOKART/SampleRoute.csv";
 FILE *rt;
 
@@ -36,9 +36,12 @@ extern int obstacle_detection();
 
 extern int Euler_state(void);
 
-#define detect 0			//1で有効　0無効
+extern int initCamera(void);
+
+#define detect 1			//1で有効　0無効
 
 extern void Detect_RoadEdge(double *edge);
+extern void init_Euler(void);
 
 
 //目的地の座標（LC）
@@ -99,7 +102,9 @@ int initialize(){
 	}
 	else{ std::cout << "cotroller Open\n\n"; }
 
+	init_Euler();
 
+	//initCamera();
 
 	//障害物検知用のURGとの通信の開始
 	if (init_URG()){
@@ -109,6 +114,7 @@ int initialize(){
 	else{
 		std::cout << "URG for Detect : Open\n\n";
 	}
+
 
 
 
@@ -157,12 +163,17 @@ int EmergencyButtonState(void){
 	
 	Avel = (abs(RightAngVel) + abs(LeftAngVel)) / 2;
 
+	//std::cout << "r:" << RightAngVel << "L:" << LeftAngVel << "\n";
+
 	//回転数が非常に小さい場合にループに入る
-	while(Avel < 0.001){
-		std::cout << Avel;
+	while(Avel < 0.01){
+		YP_get_wheel_vel(&RightAngVel, &LeftAngVel);
+		Avel = (abs(RightAngVel) + abs(LeftAngVel)) / 2;
+		//std::cout << "r:" << RightAngVel << "L:" << LeftAngVel << "\n";
+		//std::cout << Avel;
 		std::cout << "emergency stop?\n";
 		emergency_time_count++;
-		if (emergency_time_count>10){
+		if (emergency_time_count>5){
 			//1秒間止まったままだと非常停止だと判断する
 
 			std::cout << "I think emergency stop now!!\n";
@@ -242,7 +253,7 @@ int run_Obstacledetection(void){
 				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 			}
 			else{
-				tar_y_LC = tar_y_LC - 0.5;
+				tar_y_LC = tar_y_LC + 0.5;
 				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 			}
 		case 4:
@@ -252,7 +263,7 @@ int run_Obstacledetection(void){
 				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 			}
 			else{
-				tar_y_LC = tar_y_LC + 0.5;
+				tar_y_LC = tar_y_LC - 0.5;
 				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 			}
 
@@ -279,6 +290,9 @@ void RecordTorq(int num,int mode){
 
 	fprintf(trq, "%lf,%d,%d,%lf,%lf,%lf,%lf,%lf%lf,%lf,%lf\n", (((double)now.QuadPart - (double)start.QuadPart) / (double)freq.QuadPart),
 																							num, mode, R_torq, L_torq, x, y, th, x_LC, y_LC, th_LC);
+
+	std::cout << "POS : " << x << " , " << " , " << y << " , " << th << "\n";
+	std::cout << "POSLC : " << x_LC << " , " << " , " << y_LC << " , " << th_LC << "\n";
 
 
 }
@@ -378,8 +392,7 @@ void RunControl_mainloop(void){
 		tar_th_GL = atan((tar_y_GL - before_y_GL) / (tar_x_GL - before_x_GL));
 		
 		std::cout << "num:" << num << "\n";
-		std::cout << "target:" << tar_x_GL << "," << tar_y_GL << "," << tar_th_GL << "\n";
-	
+		
 		
 		
 		//LCでの目標座標も取得しておく
@@ -388,18 +401,21 @@ void RunControl_mainloop(void){
 		tar_th_LC = 0.0;
 
 		//
+		std::cout << "targetLC:" << tar_x_LC << "," << tar_y_LC << "," << tar_th_LC << "\n";
 		
 		
 		//自己位置のLCのリセット
 		Spur_get_pos_GL(&x_GL,&y_GL,&th_GL);
-		Spur_set_pos_LC(x_GL - tar_x_GL, y_GL - tar_y_GL, th_GL - tar_th_GL);
+		Spur_set_pos_LC(x_GL - before_x_GL, y_GL - before_y_GL, th_GL - tar_th_GL);
 
 		//これ以下ではすべてLCで座標を扱う
 
 		//駆動指令
 		Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
+		
+
 					
-		while (!Spur_over_line_LC(tar_x_LC - 0.3, tar_y_LC, tar_th_LC)){
+		while (!Spur_over_line_LC(tar_x_LC - 0.5, tar_y_LC, tar_th_LC)){
 			
 			//各センサからのステータス
 

@@ -7,24 +7,20 @@
 using namespace std;
 using namespace cv;
 
-VideoCapture cap(0);
 
-Mat original_image; // 元画像バックアップ
 
 int PixcelRate = 95;		//1mあたりのピクセル数　　pix/m
 
+/*
 int initCamera(void){
 	
-	if (!cap.isOpened()){
-		cout << "Camera cannot Open!!" << endl;
-		return-1;
-	}
+
 
 	cap >> original_image;
 	imshow("Image", original_image);
 
 	return 0;
-}
+}*/
 
 
 /*
@@ -241,7 +237,14 @@ void Detect_RoadEdge(double *edge){
 	Mat src;
 	
 	Mat pic;
-	
+	Mat original_image; // 元画像バックアップ
+
+	VideoCapture cap(0);
+	if (!cap.isOpened()){
+		cout << "Camera cannot Open!!" << endl;
+		return;
+	}
+
 	cap >> src;
 	original_image = src;
 	pic = src;

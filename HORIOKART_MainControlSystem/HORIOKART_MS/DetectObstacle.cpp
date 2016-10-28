@@ -21,7 +21,7 @@ int init_URG(){
 
 	int ret;
 
-	const char connect_device[] = "COM20";
+	const char connect_device[] = "COM21";
 	const long connect_baudrate = 115200;
 
 	// \~japanese センサに対して接続を行う。

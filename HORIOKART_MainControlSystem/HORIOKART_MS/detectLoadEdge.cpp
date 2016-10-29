@@ -244,8 +244,14 @@ void Detect_RoadEdge(double *edge){
 		cout << "Camera cannot Open!!" << endl;
 		return;
 	}
-
+	else
+		cout << "camera open\n";
+	Sleep(1000);
 	cap >> src;
+
+	//imshow("Imageorigin", src);
+	
+
 	original_image = src;
 	pic = src;
 

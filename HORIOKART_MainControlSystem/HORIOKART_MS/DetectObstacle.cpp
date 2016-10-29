@@ -41,7 +41,7 @@ int init_URG(){
 //int obstacle_detection(urg_t urg)
 int obstacle_detection()
 {
-	int URG_L = 4000;	//URG‘ª’è‹——£
+	int URG_L = 3000;	//URG‘ª’è‹——£
 	//int length_data_size;	//‘ª’è“_‚Ì”
 	//long *length_data;		//‘ª’è‹——£‚ÌŠi”[æ
 	long min_distance, max_distance;	//‘ª’è‰Â”\‹——£

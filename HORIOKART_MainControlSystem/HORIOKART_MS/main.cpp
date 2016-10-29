@@ -15,7 +15,7 @@
 
 
 //ルートのファイル名
-const char *routefile = "SampleRoute1028_1.csv";
+const char *routefile = "1029_1.csv";
 //const char *routefile = "../../TeachingSystem_HORIOKART/TeachingSystem_HORIOKART/SampleRoute.csv";
 FILE *rt;
 
@@ -253,7 +253,7 @@ int run_Obstacledetection(void){
 				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 			}
 			else{
-				tar_y_LC = tar_y_LC + 0.5;
+				tar_y_LC = tar_y_LC + 0.3;
 				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 			}
 		case 4:
@@ -263,7 +263,7 @@ int run_Obstacledetection(void){
 				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 			}
 			else{
-				tar_y_LC = tar_y_LC - 0.5;
+				tar_y_LC = tar_y_LC - 0.3;
 				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 			}
 
@@ -438,6 +438,7 @@ void RunControl_mainloop(void){
 
 			//トルクの計測（お試し)
 			RecordTorq(num, 2);
+
 
 			//駆動指令を修正する場合の動作をここに挿入
 			//0.5m進む度に画像取得・2ｍごとに駆動指令を入れなおす

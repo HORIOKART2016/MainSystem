@@ -1,10 +1,9 @@
-﻿2016/10/28 21:26:37 にビルドを開始しました。
+﻿2016/10/29 11:32:28 にビルドを開始しました。
      1>ノード 2 上のプロジェクト "C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\HORIOKART_MS\HORIOKART_MS.vcxproj" (Build ターゲット)。
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\headder" /IC:\ypspur\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
-         main.cpp
-     1>c:\users\user\desktop\つくばチャレンジ2016\hriokart2016\mainsystem\horiokart_maincontrolsystem\headder\ypparam.h : warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
-     1>c:\users\user\desktop\つくばチャレンジ2016\hriokart2016\mainsystem\horiokart_maincontrolsystem\horiokart_ms\main.cpp(343): warning C4101: 'mode' : ローカル変数は 1 度も使われていません。
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\headder" /IC:\ypspur\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt detectLoadEdge.cpp
+         detectLoadEdge.cpp
+     1>c:\users\user\desktop\つくばチャレンジ2016\hriokart2016\mainsystem\horiokart_maincontrolsystem\horiokart_ms\detectloadedge.cpp(98): warning C4244: '=' : 'double' から 'uchar' への変換です。データが失われる可能性があります。
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\Debug\HORIOKART_MS.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\lib" /LIBPATH:C:\ypspur\lib /LIBPATH:"C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib" libypspur_dll.lib urg_cpp.lib ws2_32.lib setupapi.lib opencv_core249d.lib opencv_highgui249d.lib opencv_imgproc249d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\Debug\HORIOKART_MS.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\Debug\HORIOKART_MS.lib" /MACHINE:X86 Debug\detectLoadEdge.obj
          Debug\DetectObstacle.obj
@@ -27,4 +26,4 @@
 
 ビルドに成功しました。
 
-経過時間 00:00:02.71
+経過時間 00:00:02.12

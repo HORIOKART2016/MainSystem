@@ -28,12 +28,12 @@ HANDLE init_Euler_arduino( HANDLE hComm)
 	//string com = "\\\\.\\COM" + to_string(arduinoCOM);
 	hComm = CreateFile(_T(EULERCOM), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hComm == INVALID_HANDLE_VALUE){
-		printf("EULER:ƒVƒŠƒAƒ‹ƒ|[ƒg‚ğŠJ‚­‚±‚Æ‚ª‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½B");
+		printf("EULER:ã‚·ãƒªã‚¢ãƒ«ãƒãƒ¼ãƒˆã‚’é–‹ãã“ã¨ãŒã§ãã¾ã›ã‚“ã§ã—ãŸã€‚");
 		char z;
 		z = getchar();
 		return 0;
 	}
-	//ƒ|[ƒg‚ğŠJ‚¯‚Ä‚¢‚ê‚Î’ÊMİ’è‚ğs‚¤
+	//ãƒãƒ¼ãƒˆã‚’é–‹ã‘ã¦ã„ã‚Œã°é€šä¿¡è¨­å®šã‚’è¡Œã†
 	else
 	{
 		DCB lpTest;
@@ -53,19 +53,19 @@ HANDLE init_Euler_arduino( HANDLE hComm)
 
 	//Sleep(3000);
 
-	// ƒoƒbƒtƒ@ƒNƒŠƒA
+	// ãƒãƒƒãƒ•ã‚¡ã‚¯ãƒªã‚¢
 	memset(sendbuf, 0x00, sizeof(sendbuf));
-	// ƒpƒPƒbƒgì¬
+	// ãƒ‘ã‚±ãƒƒãƒˆä½œæˆ
 	sendbuf[0] = (unsigned char)1;
-	// ’ÊMƒoƒbƒtƒ@ƒNƒŠƒA
+	// é€šä¿¡ãƒãƒƒãƒ•ã‚¡ã‚¯ãƒªã‚¢
 	PurgeComm(hComm, PURGE_RXCLEAR);
-	// ‘—M
+	// é€ä¿¡
 	ret = WriteFile(hComm, &sendbuf, 5, &len, NULL);
 
 	memset(receive_data, 0x00, sizeof(receive_data));
-	// ’ÊMƒoƒbƒtƒ@ƒNƒŠƒA
+	// é€šä¿¡ãƒãƒƒãƒ•ã‚¡ã‚¯ãƒªã‚¢
 	PurgeComm(hComm, PURGE_RXCLEAR);
-	// Arduino‚©‚çƒf[ƒ^‚ğóM
+	// Arduinoã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’å—ä¿¡
 	ret = ReadFile(hComm, &receive_data, 1, &len, NULL);
 
 	Sleep(3000);
@@ -109,12 +109,12 @@ void tile_cal(float Euler[3], double d_t[2])
 		d_t[1] = asin(z);
 	}
 	//printf("%lf", 2 * M_PI - Euler[0]);
-	//printf("(ƒ³,ƒÆ) = (%lf,%lf)\n", d_t[0], d_t[1]);
+	//printf("(Î¦,Î¸) = (%lf,%lf)\n", d_t[0], d_t[1]);
 }
 
 
 
-void receive_euler(HANDLE hComm, float Euler[3])
+void receive_euler(HANDLE hComm, float Euler[3],floatã€€accelY)
 {
 
 	DWORD start, end;
@@ -125,7 +125,7 @@ void receive_euler(HANDLE hComm, float Euler[3])
 	int				ret;
 	float			DL, DR, DIS, ANG;
 	unsigned long	len;
-	char *euler_1, *euler_2, *euler_3;
+	char *euler_1, *euler_2, *euler_3,*accel;
 	int i = 0;
 	float			droidOrientation[3];
 
@@ -139,29 +139,29 @@ void receive_euler(HANDLE hComm, float Euler[3])
 	}
 
 	if (!hComm)	return;
-	// ƒoƒbƒtƒ@ƒNƒŠƒA
+	// ãƒãƒƒãƒ•ã‚¡ã‚¯ãƒªã‚¢
 	memset(sendbuf, 0x00, sizeof(sendbuf));
-	// ƒpƒPƒbƒgì¬
+	// ãƒ‘ã‚±ãƒƒãƒˆä½œæˆ
 	sendbuf[0] = (unsigned char)1;
-	// ’ÊMƒoƒbƒtƒ@ƒNƒŠƒA
+	// é€šä¿¡ãƒãƒƒãƒ•ã‚¡ã‚¯ãƒªã‚¢
 	PurgeComm(hComm, PURGE_RXCLEAR);
-	// ‘—M
+	// é€ä¿¡
 	ret = WriteFile(hComm, &sendbuf, 1, &len, NULL);
 
 
-	// ƒoƒbƒtƒ@ƒNƒŠƒA
+	// ãƒãƒƒãƒ•ã‚¡ã‚¯ãƒªã‚¢
 	memset(receive_data, 0x00, sizeof(receive_data));
-	// ’ÊMƒoƒbƒtƒ@ƒNƒŠƒA
+	// é€šä¿¡ãƒãƒƒãƒ•ã‚¡ã‚¯ãƒªã‚¢
 	PurgeComm(hComm, PURGE_RXCLEAR);
-	// Arduino‚©‚çƒf[ƒ^‚ğóM
-	ret = ReadFile(hComm, &receive_data, 20, &len, NULL);
+	// Arduinoã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’å—ä¿¡
+	ret = ReadFile(hComm, &receive_data, 25, &len, NULL);
 	//cout << static_cast<bitset<8>>(receive_data[0]) << "," << static_cast<bitset<8>>(receive_data[1] )<< endl;
 
 
 
 
 
-	//‰Šú‰»‚³‚ê‚Ä‚¢‚È‚¯‚ê‚Î‰Šú‰»(‰‚ß‚Ìƒf[ƒ^‚ğÌ‚Ä‚é)
+	//åˆæœŸåŒ–ã•ã‚Œã¦ã„ãªã‘ã‚Œã°åˆæœŸåŒ–(åˆã‚ã®ãƒ‡ãƒ¼ã‚¿ã‚’æ¨ã¦ã‚‹)
 	if (!isInitialized)
 	{
 		isInitialized = true;
@@ -174,11 +174,13 @@ void receive_euler(HANDLE hComm, float Euler[3])
 	euler_1 = strtok_s((char*)receive_data, ",",&ctx);
 	euler_2 = strtok_s(NULL, ",",&ctx);
 	euler_3 = strtok_s(NULL, ",",&ctx);
+	accel=strtok_s(NULL, ",",&ctx);
 
 
 	Euler[0] = strtod(euler_1, NULL);
 	Euler[1] = strtod(euler_2, NULL);
 	Euler[2] = strtod(euler_3, NULL);
+	accelY=-strtod(accel, NULL);
 	//printf("%f\n", Euler[0]);
 	//printf("%f\n", Euler[1]);
 	//printf("%f\n", Euler[2]);
@@ -188,31 +190,32 @@ void receive_euler(HANDLE hComm, float Euler[3])
 void init_Euler(void){
 	int arduinoCOM = 16;
 	
-	//ƒVƒŠƒAƒ‹ƒ|[ƒg‚ğŠJ‚¢‚Äƒnƒ“ƒhƒ‹‚ğæ“¾
+	//ã‚·ãƒªã‚¢ãƒ«ãƒãƒ¼ãƒˆã‚’é–‹ã„ã¦ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 	hComm = init_Euler_arduino(hComm);
 }
 
 
 
 float Euler[3];
+floatã€€accelY;
 double d_t[2];
 
 
 //main
 int Euler_state(void)
 {
-	receive_euler(hComm, Euler);
+	receive_euler(hComm, Euler,accelY);
 	
 
 	tile_cal(Euler, d_t);
 
 	double x, y, rad;
 	
-	//‰ñ“]Šp•â³
+	//å›è»¢è§’è£œæ­£
 	Spur_get_pos_GL(&x, &y, &rad);
 	Spur_adjust_pos_GL(x, y, 2 * M_PI - Euler[0]);
 	
-	//ŒXÎ•â³
+	//å‚¾æ–œè£œæ­£
 	Spur_tilt_FS(d_t[0], d_t[1]);
 
 	return 0;

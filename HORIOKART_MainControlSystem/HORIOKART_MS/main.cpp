@@ -1,4 +1,4 @@
-// HORIOKART_MainControlSystem.cpp : ƒRƒ“ƒ\[ƒ‹ ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒGƒ“ƒgƒŠ ƒ|ƒCƒ“ƒg‚ğ’è‹`‚µ‚Ü‚·B
+// HORIOKART_MainControlSystem.cpp : ã‚³ãƒ³ã‚½ãƒ¼ãƒ« ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¨ãƒ³ãƒˆãƒª ãƒã‚¤ãƒ³ãƒˆã‚’å®šç¾©ã—ã¾ã™ã€‚
 //
 
 #define _CRT_SECURE_NO_WARININGS
@@ -14,51 +14,51 @@
 #define PI 3.14159265359
 
 
-//ƒ‹[ƒg‚Ìƒtƒ@ƒCƒ‹–¼
+//ãƒ«ãƒ¼ãƒˆã®ãƒ•ã‚¡ã‚¤ãƒ«å
 const char *routefile = "1029_1.csv";
 //const char *routefile = "../../TeachingSystem_HORIOKART/TeachingSystem_HORIOKART/SampleRoute.csv";
 FILE *rt;
 
-#define vel 2500		//Å‚‘¬“x(m/h)
-#define acc	1500		//Å‘å‰Á‘¬“x(m/h/s)
+#define vel 2500		//æœ€é«˜é€Ÿåº¦(m/h)
+#define acc	1500		//æœ€å¤§åŠ é€Ÿåº¦(m/h/s)
 
-//‚µ‚ÉŠÔŒv‘ª‚µ‚Ä‚İ‚é
+//è©¦ã—ã«æ™‚é–“è¨ˆæ¸¬ã—ã¦ã¿ã‚‹
 LARGE_INTEGER freq;
 LARGE_INTEGER start, now;
 
 
-//‚µ‚Éƒgƒ‹ƒN‹L˜^‚µ‚Ä‚İ‚é
+//è©¦ã—ã«ãƒˆãƒ«ã‚¯è¨˜éŒ²ã—ã¦ã¿ã‚‹
 FILE *trq;
 const char *torq_record = "TorqRecord.csv";
 
-extern int init_URG();			//urg‚Ìinitialize
+extern int init_URG();			//urgã®initialize
 extern int obstacle_detection();
 
 extern int Euler_state(void);
 
 extern int initCamera(void);
 
-#define detect 1			//1‚Å—LŒø@0–³Œø
+#define detect 1			//1ã§æœ‰åŠ¹ã€€0ç„¡åŠ¹
 
 extern void Detect_RoadEdge(double *edge);
 extern void init_Euler(void);
 
 
-//–Ú“I’n‚ÌÀ•WiLCj
+//ç›®çš„åœ°ã®åº§æ¨™ï¼ˆLCï¼‰
 double tar_x_LC, tar_y_LC, tar_th_LC;
 
-//¶‰E‚ÌLC‚Ì’l(‚™)‚Ì§ŒÀ ¶F³i+j@‰EF•‰i-j
+//å·¦å³ã®LCã®å€¤(ï½™)ã®åˆ¶é™ å·¦ï¼šæ­£ï¼ˆ+ï¼‰ã€€å³ï¼šè² ï¼ˆ-ï¼‰
 double PassibleRange_left = 1.5, PassibleRange_right = -1.5;
 double RoadEdge_buf1[2] = { 0.0, 0.0 }, RoadEdge_buf2[2] = { 0.0, 0.0 };
 
-//ypspur‚Æ‚Ì’ÊM‚Ì‰Šú‰»
-//ypspur coordinater‚Æ‚Ì’ÊM‚ğŠJn‚·‚é
+//ypspurã¨ã®é€šä¿¡ã®åˆæœŸåŒ–
+//ypspur coordinaterã¨ã®é€šä¿¡ã‚’é–‹å§‹ã™ã‚‹
 
 int initSpur(void){
-	// WindowsŠÂ‹«‚Å•W€o—Í‚ªƒoƒbƒtƒ@ƒŠƒ“ƒO‚³‚ê‚È‚¢‚æ‚¤‚Éİ’è
+	// Windowsç’°å¢ƒã§æ¨™æº–å‡ºåŠ›ãŒãƒãƒƒãƒ•ã‚¡ãƒªãƒ³ã‚°ã•ã‚Œãªã„ã‚ˆã†ã«è¨­å®š
 	setvbuf(stdout, 0, _IONBF, 0);
 
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	if (Spur_init() < 0)
 	{
 		fprintf(stderr, "ERROR : cannot open spur.\n");
@@ -67,16 +67,16 @@ int initSpur(void){
 
 	std::cout << "Spur initialized\n\n";
 
-	/*Spur_set_vel(vel / 3600);		//‘¬“x0.3m/sec
-	Spur_set_accel(acc / 3600);	//‰Á‘¬“xim/s/sj
-	Spur_set_angvel(90 * PI / 180);	//Šp‘¬“xirad/s)
-	Spur_set_angaccel(180 * PI / 180);		//Šp‰Á‘¬“xirad/s/s)
+	/*Spur_set_vel(vel / 3600);		//é€Ÿåº¦0.3m/sec
+	Spur_set_accel(acc / 3600);	//åŠ é€Ÿåº¦ï¼ˆm/s/sï¼‰
+	Spur_set_angvel(90 * PI / 180);	//è§’é€Ÿåº¦ï¼ˆrad/s)
+	Spur_set_angaccel(180 * PI / 180);		//è§’åŠ é€Ÿåº¦ï¼ˆrad/s/s)
 	*/
 
-	Spur_set_vel(0.3);		//‘¬“x0.3m/sec
-	Spur_set_accel(1.0);	//‰Á‘¬“xim/s/sj
-	Spur_set_angvel(0.5);	//Šp‘¬“xirad/s)
-	Spur_set_angaccel(1.5);		//Šp‰Á‘¬“xirad/s/s)
+	Spur_set_vel(0.3);		//é€Ÿåº¦0.3m/sec
+	Spur_set_accel(1.0);	//åŠ é€Ÿåº¦ï¼ˆm/s/sï¼‰
+	Spur_set_angvel(0.5);	//è§’é€Ÿåº¦ï¼ˆrad/s)
+	Spur_set_angaccel(1.5);		//è§’åŠ é€Ÿåº¦ï¼ˆrad/s/s)
 	
 	
 	return 0;
@@ -86,17 +86,17 @@ int initSpur(void){
 
 int initialize(){
 
-	//Œo˜Hƒf[ƒ^‚ğŠJ‚­
+	//çµŒè·¯ãƒ‡ãƒ¼ã‚¿ã‚’é–‹ã
 	fopen_s(&rt, routefile, "r");
 	/*if ((rt = fopen(routefile, "r")) == NULL){
-		//o—ˆ‚ê‚Î1“x“Ç‚İ‚±‚ñ‚Å—LŒø‚ÈŒo˜H‚ª“ü‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©‚ğŠm”F‚·‚éi¡Œã‚Ì‰Û‘èj
+		//å‡ºæ¥ã‚Œã°1åº¦èª­ã¿ã“ã‚“ã§æœ‰åŠ¹ãªçµŒè·¯ãŒå…¥ã£ã¦ã„ã‚‹ã‹ã©ã†ã‹ã‚’ç¢ºèªã™ã‚‹ï¼ˆä»Šå¾Œã®èª²é¡Œï¼‰
 
 		printf("Can't open Route file.....\n");
 		return 1;
 	}*/
 
 
-	//ƒoƒbƒNƒOƒ‰ƒEƒ“ƒh‚ÅƒRƒ“ƒgƒ[ƒ‰‚ğ‹N“®‚µ‚Ä‚¨‚­
+	//ãƒãƒƒã‚¯ã‚°ãƒ©ã‚¦ãƒ³ãƒ‰ã§ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ã‚’èµ·å‹•ã—ã¦ãŠã
 	if (system("start ../Debug/MS_Controller.exe")){
 		std::cout << "controller open error....\n";
 	}
@@ -106,7 +106,7 @@ int initialize(){
 
 	//initCamera();
 
-	//áŠQ•¨ŒŸ’m—p‚ÌURG‚Æ‚Ì’ÊM‚ÌŠJn
+	//éšœå®³ç‰©æ¤œçŸ¥ç”¨ã®URGã¨ã®é€šä¿¡ã®é–‹å§‹
 	if (init_URG()){
 		std::cout << "URG Error...\n";
 		return 1;
@@ -118,7 +118,7 @@ int initialize(){
 
 
 
-	//YPSpur‚Æ‚Ì’ÊM‚ğŠJn‚·‚é
+	//YPSpurã¨ã®é€šä¿¡ã‚’é–‹å§‹ã™ã‚‹
 	if (initSpur())
 	{
 		return 1;
@@ -126,7 +126,7 @@ int initialize(){
 
 
 
-	//ƒgƒ‹ƒN‹L˜^—p‚Ìƒtƒ@ƒCƒ‹ƒI[ƒvƒ“
+	//ãƒˆãƒ«ã‚¯è¨˜éŒ²ç”¨ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚ªãƒ¼ãƒ—ãƒ³
 	fopen_s(&trq, torq_record, "w");
 	fprintf(trq, "TimeStamp,fase,mode,right_torque,left_torque,x,y,th,xLC,y_LC,th_LC\n");
 
@@ -139,20 +139,20 @@ int initialize(){
 
 }
 
-/*------‚±‚±‚Ü‚Å‚ªinitialize------*/
+/*------ã“ã“ã¾ã§ãŒinitialize------*/
 
 
 void finalise(void){
 
-	//ƒfƒoƒbƒO—p
-	//ƒgƒ‹ƒNŒv‘ªƒtƒ@ƒCƒ‹‚Ì•Û‘¶
+	//ãƒ‡ãƒãƒƒã‚°ç”¨
+	//ãƒˆãƒ«ã‚¯è¨ˆæ¸¬ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¿å­˜
 	fclose(trq);
 
 }
 
 
-//”ñí’â~‚Ì”»’f‚·‚éŠÖ”
-//(”ñí’â~‚Ìw—ß‚Í•Ê‚ÌƒvƒƒOƒ‰ƒ€‚©‚ço‚³‚ê‚é)
+//éå¸¸åœæ­¢ã®åˆ¤æ–­ã™ã‚‹é–¢æ•°
+//(éå¸¸åœæ­¢ã®æŒ‡ä»¤ã¯åˆ¥ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‹ã‚‰å‡ºã•ã‚Œã‚‹)
 int EmergencyButtonState(void){
 	
 	double RightAngVel, LeftAngVel;
@@ -165,7 +165,7 @@ int EmergencyButtonState(void){
 
 	//std::cout << "r:" << RightAngVel << "L:" << LeftAngVel << "\n";
 
-	//‰ñ“]”‚ª”ñí‚É¬‚³‚¢ê‡‚Éƒ‹[ƒv‚É“ü‚é
+	//å›è»¢æ•°ãŒéå¸¸ã«å°ã•ã„å ´åˆã«ãƒ«ãƒ¼ãƒ—ã«å…¥ã‚‹
 	while(Avel < 0.01){
 		YP_get_wheel_vel(&RightAngVel, &LeftAngVel);
 		Avel = (abs(RightAngVel) + abs(LeftAngVel)) / 2;
@@ -174,7 +174,7 @@ int EmergencyButtonState(void){
 		std::cout << "emergency stop?\n";
 		emergency_time_count++;
 		if (emergency_time_count>5){
-			//1•bŠÔ~‚Ü‚Á‚½‚Ü‚Ü‚¾‚Æ”ñí’â~‚¾‚Æ”»’f‚·‚é
+			//1ç§’é–“æ­¢ã¾ã£ãŸã¾ã¾ã ã¨éå¸¸åœæ­¢ã ã¨åˆ¤æ–­ã™ã‚‹
 
 			std::cout << "I think emergency stop now!!\n";
 			std::cout << "If start again, Please hit key!!\n";
@@ -186,7 +186,7 @@ int EmergencyButtonState(void){
 				return 1;
 			}
 
-			//ÄŠJ‚·‚éê‡ƒTƒCƒhw—ß‚ğ‘—‚é
+			//å†é–‹ã™ã‚‹å ´åˆã‚µã‚¤ãƒ‰æŒ‡ä»¤ã‚’é€ã‚‹
 			Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 
 			break;
@@ -201,18 +201,18 @@ int EmergencyButtonState(void){
 
 
 
-//‰ñ”ğ•s”\‚ÌáŠQ•¨‚É‘Î‚·‚éƒ‹[ƒv
+//å›é¿ä¸èƒ½ã®éšœå®³ç‰©ã«å¯¾ã™ã‚‹ãƒ«ãƒ¼ãƒ—
 int Unvoidable_Obstacle(){
 
 
-	Spur_stop();		//‰ñ”ğ•s”\‚ÌáŠQ•¨‚ğ”­Œ©‚µ‚½ê‡’¼‚¿‚É’â~‚·‚é
+	Spur_stop();		//å›é¿ä¸èƒ½ã®éšœå®³ç‰©ã‚’ç™ºè¦‹ã—ãŸå ´åˆç›´ã¡ã«åœæ­¢ã™ã‚‹
 
 	int obstacle_state=8;
 
 	std::cout << "Detect obstacle!!\n\n";
 
 	while (1){
-		//áŠQ•¨‚ÌŠm”F
+		//éšœå®³ç‰©ã®ç¢ºèª
 		obstacle_state = obstacle_detection();
 
 		//obstacle=detectObstacle;
@@ -227,27 +227,31 @@ int Unvoidable_Obstacle(){
 
 }
 
-//áŠQ•¨ŒŸ’m
+//éšœå®³ç‰©æ¤œçŸ¥
+//æ›¸ãæ›ãˆbyå°å®®ã€€20161104
+//é …ç›®
+//1:ç·Šæ€¥åœæ­¢ã®æ¡ä»¶å¤‰æ›´
+
 int run_Obstacledetection(void){
 	
 	int obstacle_state;
 
-	obstacle_state = obstacle_detection();	//áŠQ•¨‚ÌƒXƒe[ƒ^ƒX‚Ìæ“¾
+	obstacle_state = obstacle_detection();	//éšœå®³ç‰©ã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã®å–å¾—
 	//std::cout << obstacle_state << "\n";
-	//‰ñ”ğ•s”\‚ÌáŠQ•¨‚ğŒŸ’m‚µ‚½‚Æ‚«’â~‚µ‚Äƒ‹[ƒv‚É“Ë“ü‚·‚é
-	if (obstacle_state == 8 || obstacle_state == 2 || obstacle_state == 4 || obstacle_state == 6 || obstacle_state == 7 ){
+	//å›é¿ä¸èƒ½ã®éšœå®³ç‰©ã‚’æ¤œçŸ¥ã—ãŸã¨ãåœæ­¢ã—ã¦ãƒ«ãƒ¼ãƒ—ã«çªå…¥ã™ã‚‹
+	if (obstacle_state == 1 || obstacle_state == 2 ){
 		Unvoidable_Obstacle(); 
 		Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 	}
 	
 
 	switch (obstacle_state){
-		case 8:
+		case 6:
 			Unvoidable_Obstacle();
 			Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 			break;
-		case 2:
-		case 6:
+		case 3:
+		case 7:
 			if (abs(PassibleRange_left) < 0.3){
 				Unvoidable_Obstacle();
 				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
@@ -257,7 +261,7 @@ int run_Obstacledetection(void){
 				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 			}
 		case 4:
-		case 7:
+		case 8:
 			if (abs(PassibleRange_right) < 0.3){
 				Unvoidable_Obstacle();
 				Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
@@ -274,9 +278,9 @@ int run_Obstacledetection(void){
 }
 
 
-//‚µ‚Éƒgƒ‹ƒN‚ğæ“¾‚µ‚Ä‚İ‚é
-//‚Æ‚è‚ ‚¦‚¸‚Ícsv‚É‚½‚ß‚é‚¾‚¯
-//‰½‚©‚Ég‚¤‚©‚à‚µ‚ê‚È‚¢(‹ó“]ŒŸ’m“™)
+//è©¦ã—ã«ãƒˆãƒ«ã‚¯ã‚’å–å¾—ã—ã¦ã¿ã‚‹
+//ã¨ã‚Šã‚ãˆãšã¯csvã«ãŸã‚ã‚‹ã ã‘
+//ä½•ã‹ã«ä½¿ã†ã‹ã‚‚ã—ã‚Œãªã„(ç©ºè»¢æ¤œçŸ¥ç­‰)
 void RecordTorq(int num,int mode){
 	
 	double R_torq, L_torq,x,y,th;
@@ -305,9 +309,9 @@ void RoadEdge_syori(void){
 
 	Detect_RoadEdge(RoadEdge);
 	
-	//—áŠOˆ—F‘O‚Q‰ñ‚ÌŒ‹‰Ê‚©‚ç1ŸŠÖ”‚ğæ“¾i2ŒÂ‘O‚ª0‚»‚ÌŸ‚ª0.5j
-	//‚»‚Ì’¼ü‚Æ‚Ì‹——£‚ğ“±o‚µè‡’l‚ğ—p‚¢‚Ä—áŠOˆ—
-	//buf‚Í1‚ªè‘O@2‚ª‚»‚Ì0.5‚æi‚±‚Á‚¿‚ª‹ß‚¢j
+	//ä¾‹å¤–å‡¦ç†ï¼šå‰ï¼’å›ã®çµæœã‹ã‚‰1æ¬¡é–¢æ•°ã‚’å–å¾—ï¼ˆ2å€‹å‰ãŒ0ãã®æ¬¡ãŒ0.5ï¼‰
+	//ãã®ç›´ç·šã¨ã®è·é›¢ã‚’å°å‡ºã—é–¾å€¤ã‚’ç”¨ã„ã¦ä¾‹å¤–å‡¦ç†
+	//bufã¯1ãŒæ‰‹å‰ã€€2ãŒãã®0.5ï½å…ˆï¼ˆã“ã£ã¡ãŒè¿‘ã„ï¼‰
 
 
 	if ((abs(RoadEdge_buf1[0] - RoadEdge_buf2[1]) > 0.5) && (abs(RoadEdge_buf2[0] - RoadEdge_buf2[1]) > 0.5))
@@ -336,7 +340,7 @@ void RoadEdge_syori(void){
 }
 
 
-//‘–s§Œä—p‚ÌƒƒCƒ“ƒ‹[ƒv
+//èµ°è¡Œåˆ¶å¾¡ç”¨ã®ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—
 void RunControl_mainloop(void){
 
 	char buf[512];
@@ -346,23 +350,23 @@ void RunControl_mainloop(void){
 
 	int Obstacle_state = 0;
 
-	//–Ú“I’n‚ÌÀ•WiGLj
+	//ç›®çš„åœ°ã®åº§æ¨™ï¼ˆGLï¼‰
 	double tar_x_GL, tar_y_GL, tar_th_GL;
-	//–Ú“I’n‚ÌÀ•WiLCj
+	//ç›®çš„åœ°ã®åº§æ¨™ï¼ˆLCï¼‰
 	double tar_x_LC, tar_y_LC, tar_th_LC;
-	//‘O‚Ì“_‚ÌÀ•W‚ğ‹L˜^
+	//å‰ã®ç‚¹ã®åº§æ¨™ã‚’è¨˜éŒ²
 	double before_x_GL = 0.0f, before_y_GL = 0.0f, before_th_GL = 0.0f;
 
-	//¶‰E‚ÌLC‚Ì’l(‚™)‚Ì§ŒÀ ¶F³i+j@‰EF•‰i-j
+	//å·¦å³ã®LCã®å€¤(ï½™)ã®åˆ¶é™ å·¦ï¼šæ­£ï¼ˆ+ï¼‰ã€€å³ï¼šè² ï¼ˆ-ï¼‰
 	double PassibleRange_left = 1.5, PassibleRange_right = -1.5;
 	
 		
-	//ƒGƒ“ƒR[ƒ_’læ“¾—p‚Ì•Ï”
+	//ã‚¨ãƒ³ã‚³ãƒ¼ãƒ€å€¤å–å¾—ç”¨ã®å¤‰æ•°
 	double x_GL = 0.0f, y_GL = 0.0f, th_GL = 0.0f;
 	double x_LC = 0.0f, y_LC = 0.0f, th_LC = 0.0f;
 
 	int over = 0;
-	int online = 0;			//–Ú•W“_EŠp“x‚Ì‚È‚·’¼üã‚É‚¢‚é‚©@@0Ffalse 1:true
+	int online = 0;			//ç›®æ¨™ç‚¹ãƒ»è§’åº¦ã®ãªã™ç›´ç·šä¸Šã«ã„ã‚‹ã‹ã€€ã€€0ï¼šfalse 1:true
 
 	double border = 0.5;
 
@@ -371,21 +375,21 @@ void RunControl_mainloop(void){
 	int roadmode;
 
 
-	//ŠeÀ•WŒn‚ğŒ´“_‚Éİ’è
+	//å„åº§æ¨™ç³»ã‚’åŸç‚¹ã«è¨­å®š
 	Spur_set_pos_GL(0.0, 0.0, 0.0);
 	Spur_set_pos_LC(0.0, 0.0, 0.0);
 	
-	//ˆê‰ŠÔŒv‘ªFŠJn
+	//ä¸€å¿œæ™‚é–“è¨ˆæ¸¬ï¼šé–‹å§‹
 	QueryPerformanceCounter(&start);
 
 	std::cout << "runcontrol start\n";
 
 
-	//ƒ‹[ƒg‚ğ‚½‚Ç‚éƒ‹[ƒv‚ÌŠJn
+	//ãƒ«ãƒ¼ãƒˆã‚’ãŸã©ã‚‹ãƒ«ãƒ¼ãƒ—ã®é–‹å§‹
 	while (fgets(buf, 5412, rt) != NULL){
 		
-		//–Ú•W“_‚Ì“Ç‚İ‚İ
-		//•¶–@F”Ô†C‚˜C‚™C‰æ‘œˆ—‚Ì—L–³
+		//ç›®æ¨™ç‚¹ã®èª­ã¿è¾¼ã¿
+		//æ–‡æ³•ï¼šç•ªå·ï¼Œï½˜ï¼Œï½™ï¼Œç”»åƒå‡¦ç†ã®æœ‰ç„¡
 		sscanf_s(buf, "%d,%lf,%lf,%d", &num, &tar_x_GL, &tar_y_GL, &roadmode);
 		
 		
@@ -395,7 +399,7 @@ void RunControl_mainloop(void){
 		
 		
 		
-		//LC‚Å‚Ì–Ú•WÀ•W‚àæ“¾‚µ‚Ä‚¨‚­
+		//LCã§ã®ç›®æ¨™åº§æ¨™ã‚‚å–å¾—ã—ã¦ãŠã
 		tar_x_LC = sqrt((tar_x_GL - before_x_GL)*(tar_x_GL - before_x_GL) + (tar_y_GL - before_y_GL)*(tar_y_GL - before_y_GL));
 		tar_y_LC = 0.0;
 		tar_th_LC = 0.0;
@@ -404,50 +408,50 @@ void RunControl_mainloop(void){
 		std::cout << "targetLC:" << tar_x_LC << "," << tar_y_LC << "," << tar_th_LC << "\n";
 		
 		
-		//©ŒÈˆÊ’u‚ÌLC‚ÌƒŠƒZƒbƒg
+		//è‡ªå·±ä½ç½®ã®LCã®ãƒªã‚»ãƒƒãƒˆ
 		Spur_get_pos_GL(&x_GL,&y_GL,&th_GL);
 		Spur_set_pos_LC(x_GL - before_x_GL, y_GL - before_y_GL, th_GL - tar_th_GL);
 
-		//‚±‚êˆÈ‰º‚Å‚Í‚·‚×‚ÄLC‚ÅÀ•W‚ğˆµ‚¤
+		//ã“ã‚Œä»¥ä¸‹ã§ã¯ã™ã¹ã¦LCã§åº§æ¨™ã‚’æ‰±ã†
 
-		//‹ì“®w—ß
+		//é§†å‹•æŒ‡ä»¤
 		Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 		
 
 					
 		while (!Spur_over_line_LC(tar_x_LC - 0.5, tar_y_LC, tar_th_LC)){
 			
-			//ŠeƒZƒ“ƒT‚©‚ç‚ÌƒXƒe[ƒ^ƒX
+			//å„ã‚»ãƒ³ã‚µã‹ã‚‰ã®ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
 
-			//‹Ù‹}’â~‚Ìó‘Ôæ“¾F‹Ù‹}’â~’†‚Éq‚ª‰Ÿ‚³‚ê‚é‚Æ1‚ª•Ô‚³‚êˆ—‚ğI—¹‚·‚é
+			//ç·Šæ€¥åœæ­¢ã®çŠ¶æ…‹å–å¾—ï¼šç·Šæ€¥åœæ­¢ä¸­ã«qãŒæŠ¼ã•ã‚Œã‚‹ã¨1ãŒè¿”ã•ã‚Œå‡¦ç†ã‚’çµ‚äº†ã™ã‚‹
 			if (EmergencyButtonState())
 				return;
 
-			//áŠQ•¨‚ÌˆÊ’uŒŸ’m
+			//éšœå®³ç‰©ã®ä½ç½®æ¤œçŸ¥
 			if (detect)
 				run_Obstacledetection();
 
-			//’¼üó‚©‚Ç‚¤‚©
+			//ç›´ç·šçŠ¶ã‹ã©ã†ã‹
 			if (!online){
 				online = Spur_near_ang_LC(tar_th_LC, 0.1);
 			}
 			
-			//ŒXÎE‰ñ“]Šp‚Ì•â³
+			//å‚¾æ–œãƒ»å›è»¢è§’ã®è£œæ­£
 			Euler_state();
 
 
-			//ƒgƒ‹ƒN‚ÌŒv‘ªi‚¨‚µ)
+			//ãƒˆãƒ«ã‚¯ã®è¨ˆæ¸¬ï¼ˆãŠè©¦ã—)
 			RecordTorq(num, 2);
 
 
-			//‹ì“®w—ß‚ğC³‚·‚éê‡‚Ì“®ì‚ğ‚±‚±‚É‘}“ü
-			//0.5mi‚Ş“x‚É‰æ‘œæ“¾E2‚‚²‚Æ‚É‹ì“®w—ß‚ğ“ü‚ê‚È‚¨‚·
+			//é§†å‹•æŒ‡ä»¤ã‚’ä¿®æ­£ã™ã‚‹å ´åˆã®å‹•ä½œã‚’ã“ã“ã«æŒ¿å…¥
+			//0.5mé€²ã‚€åº¦ã«ç”»åƒå–å¾—ãƒ»2ï½ã”ã¨ã«é§†å‹•æŒ‡ä»¤ã‚’å…¥ã‚ŒãªãŠã™
 			if (Spur_over_line_LC(border, tar_y_LC, tar_th_LC)){
 				border_count++;
 				if (roadmode)
 					RoadEdge_syori();
 
-				//•Ğ‘¤‚ÉŠñ‚Á‚Ä‚é‚Æ‚«:–Ú“I’n‚Ì‚™À•W‚ğ•ÏX‚µ‚Ä‹ì“®w—ß‚ğ“ü‚ê‚È‚¨‚·
+				//ç‰‡å´ã«å¯„ã£ã¦ã‚‹ã¨ã:ç›®çš„åœ°ã®ï½™åº§æ¨™ã‚’å¤‰æ›´ã—ã¦é§†å‹•æŒ‡ä»¤ã‚’å…¥ã‚ŒãªãŠã™
 				if ((abs(PassibleRange_left) > 0.01) && (abs(PassibleRange_left)<0.3)){
 					tar_y_LC = tar_y_LC-0.5;
 					Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
@@ -458,7 +462,7 @@ void RunControl_mainloop(void){
 					Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 				}
 
-				//2m‚²‚Æ‚Éw—ß‚ğ“ü‚ê’¼‚·
+				//2mã”ã¨ã«æŒ‡ä»¤ã‚’å…¥ã‚Œç›´ã™
 				if (border_count > 3){
 					Spur_line_LC(tar_x_LC, tar_y_LC, tar_th_LC);
 					border_count = 0;
@@ -484,12 +488,12 @@ void RunControl_mainloop(void){
 
 
 
-		//‘O‚Ì–Ú“IÀ•W‚ğ‹L˜^‚µ‚Ä‚¨‚­
+		//å‰ã®ç›®çš„åº§æ¨™ã‚’è¨˜éŒ²ã—ã¦ãŠã
 		before_x_GL = tar_x_GL;
 		before_y_GL = tar_y_GL;
 		before_th_GL = tar_th_GL;
 
-		//Ÿ‚ÌŒo˜H‚Ö
+		//æ¬¡ã®çµŒè·¯ã¸
 		over = 0;
 		online = 0;
 		border = 0.5;
@@ -500,13 +504,13 @@ void RunControl_mainloop(void){
 
 	}
 
-	//‚·‚×‚Ä‚ÌŒo˜H‚ªI—¹‚·‚é‚Æ‚±‚±‚É“’B‚·‚é
+	//ã™ã¹ã¦ã®çµŒè·¯ãŒçµ‚äº†ã™ã‚‹ã¨ã“ã“ã«åˆ°é”ã™ã‚‹
 	std::cout << "All Route Complete!!\n";
 
 	Spur_stop();
 
 
-	//I—¹ˆ—
+	//çµ‚äº†å‡¦ç†
 	finalise();
 
 }
@@ -525,11 +529,11 @@ int main(void)
 		return 1;
 	}
 
-	//ƒL[“ü—Í‚ğ‘Ò‚Â
+	//ã‚­ãƒ¼å…¥åŠ›ã‚’å¾…ã¤
 	std::cout << "\nHit key to start";
 	getchar();
 
-	//‘–s§Œäƒ‹[ƒv‚É“Ë“ü
+	//èµ°è¡Œåˆ¶å¾¡ãƒ«ãƒ¼ãƒ—ã«çªå…¥
 	RunControl_mainloop();
 
 

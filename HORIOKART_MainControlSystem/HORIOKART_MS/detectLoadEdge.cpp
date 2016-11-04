@@ -232,13 +232,14 @@ void getHueImage(Mat& src, Mat& dst)
 
 
 
-void Detect_RoadEdge(double *edge){
+void Detect_RoadEdge(double *edge,Mat& src){
 
-	Mat src;
+	//Mat src;
 	
 	Mat pic;
 	Mat original_image; // 元画像バックアップ
 
+	/*
 	VideoCapture cap(0);
 	if (!cap.isOpened()){
 		cout << "Camera cannot Open!!" << endl;
@@ -247,7 +248,7 @@ void Detect_RoadEdge(double *edge){
 	else
 		cout << "camera open\n";
 	Sleep(1000);
-	cap >> src;
+	cap >> src;*/
 
 	//imshow("Imageorigin", src);
 	

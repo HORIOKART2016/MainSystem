@@ -27,10 +27,13 @@ HANDLE init_Euler_arduino( HANDLE hComm)
 {
 	//string com = "\\\\.\\COM" + to_string(arduinoCOM);
 	hComm = CreateFile(_T(EULERCOM), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (hComm == INVALID_HANDLE_VALUE){
-		printf("EULER:シリアルポートを開くことができませんでした。");
-		char z;
-		z = getchar();
+	if(hComm == INVALID_HANDLE_VALUE)
+	{
+		printf("EULER:serial port error\n");
+
+		//printf("EULER:シリアルポートを開くことができませんでした。");
+		/*char z;
+		z = getchar();*/
 		return 0;
 	}
 	//ポートを開けていれば通信設定を行う
@@ -114,7 +117,7 @@ void tile_cal(float Euler[3], double d_t[2])
 
 
 
-void receive_euler(HANDLE hComm, float Euler[3],float　accelY)
+void receive_euler(HANDLE hComm, float Euler[3],float accelY)
 {
 
 	DWORD start, end;
@@ -197,7 +200,7 @@ void init_Euler(void){
 
 
 float Euler[3];
-float　accelY;
+float accelY;
 double d_t[2];
 
 

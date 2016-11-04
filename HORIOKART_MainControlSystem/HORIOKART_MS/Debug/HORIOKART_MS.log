@@ -1,11 +1,22 @@
-﻿2016/10/29 11:32:28 にビルドを開始しました。
-     1>ノード 2 上のプロジェクト "C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\HORIOKART_MS\HORIOKART_MS.vcxproj" (Build ターゲット)。
+﻿2016/11/04 17:20:00 にビルドを開始しました。
+     1>ノード 2 上のプロジェクト "C:\Users\user\Documents\tukuba-git\MainSystem\HORIOKART_MainControlSystem\HORIOKART_MS\HORIOKART_MS.vcxproj" (Build ターゲット)。
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\headder" /IC:\ypspur\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt detectLoadEdge.cpp
-         detectLoadEdge.cpp
-     1>c:\users\user\desktop\つくばチャレンジ2016\hriokart2016\mainsystem\horiokart_maincontrolsystem\horiokart_ms\detectloadedge.cpp(98): warning C4244: '=' : 'double' から 'uchar' への変換です。データが失われる可能性があります。
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"C:\Users\user\Documents\tukuba-git\MainSystem\HORIOKART_MainControlSystem\headder" /IC:\ypspur\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt CorrectTilt.cpp
+         CorrectTilt.cpp
+     1>c:\users\user\documents\tukuba-git\mainsystem\horiokart_maincontrolsystem\horiokart_ms\correcttilt.cpp : warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+     1>c:\users\user\documents\tukuba-git\mainsystem\horiokart_maincontrolsystem\headder\ypparam.h : warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
+     1>c:\users\user\documents\tukuba-git\mainsystem\horiokart_maincontrolsystem\horiokart_ms\correcttilt.cpp(84): warning C4244: '=' : 'double' から 'float' への変換です。データが失われる可能性があります。
+     1>c:\users\user\documents\tukuba-git\mainsystem\horiokart_maincontrolsystem\horiokart_ms\correcttilt.cpp(183): warning C4244: '=' : 'double' から 'float' への変換です。データが失われる可能性があります。
+     1>c:\users\user\documents\tukuba-git\mainsystem\horiokart_maincontrolsystem\horiokart_ms\correcttilt.cpp(184): warning C4244: '=' : 'double' から 'float' への変換です。データが失われる可能性があります。
+     1>c:\users\user\documents\tukuba-git\mainsystem\horiokart_maincontrolsystem\horiokart_ms\correcttilt.cpp(185): warning C4244: '=' : 'double' から 'float' への変換です。データが失われる可能性があります。
+     1>c:\users\user\documents\tukuba-git\mainsystem\horiokart_maincontrolsystem\horiokart_ms\correcttilt.cpp(186): warning C4244: '=' : 'double' から 'float' への変換です。データが失われる可能性があります。
+     1>c:\users\user\documents\tukuba-git\mainsystem\horiokart_maincontrolsystem\horiokart_ms\correcttilt.cpp(129): warning C4101: 'ANG' : ローカル変数は 1 度も使われていません。
+     1>c:\users\user\documents\tukuba-git\mainsystem\horiokart_maincontrolsystem\horiokart_ms\correcttilt.cpp(129): warning C4101: 'DIS' : ローカル変数は 1 度も使われていません。
+     1>c:\users\user\documents\tukuba-git\mainsystem\horiokart_maincontrolsystem\horiokart_ms\correcttilt.cpp(133): warning C4101: 'droidOrientation' : ローカル変数は 1 度も使われていません。
+     1>c:\users\user\documents\tukuba-git\mainsystem\horiokart_maincontrolsystem\horiokart_ms\correcttilt.cpp(129): warning C4101: 'DR' : ローカル変数は 1 度も使われていません。
+     1>c:\users\user\documents\tukuba-git\mainsystem\horiokart_maincontrolsystem\horiokart_ms\correcttilt.cpp(129): warning C4101: 'DL' : ローカル変数は 1 度も使われていません。
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\Debug\HORIOKART_MS.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\lib" /LIBPATH:C:\ypspur\lib /LIBPATH:"C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib" libypspur_dll.lib urg_cpp.lib ws2_32.lib setupapi.lib opencv_core249d.lib opencv_highgui249d.lib opencv_imgproc249d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\Debug\HORIOKART_MS.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\Debug\HORIOKART_MS.lib" /MACHINE:X86 Debug\detectLoadEdge.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\user\Documents\tukuba-git\MainSystem\HORIOKART_MainControlSystem\Debug\HORIOKART_MS.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Users\user\Documents\tukuba-git\MainSystem\HORIOKART_MainControlSystem\lib" /LIBPATH:C:\ypspur\lib /LIBPATH:"C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib" libypspur_dll.lib urg_cpp.lib ws2_32.lib setupapi.lib opencv_core249d.lib opencv_highgui249d.lib opencv_imgproc249d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\user\Documents\tukuba-git\MainSystem\HORIOKART_MainControlSystem\Debug\HORIOKART_MS.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\user\Documents\tukuba-git\MainSystem\HORIOKART_MainControlSystem\Debug\HORIOKART_MS.lib" /MACHINE:X86 Debug\detectLoadEdge.obj
          Debug\DetectObstacle.obj
          Debug\main.obj
          Debug\CorrectTilt.obj
@@ -15,15 +26,15 @@
      1>LINK : warning LNK4098: defaultlib 'LIBCMT' は他のライブラリの使用と競合しています。/NODEFAULTLIB:library を使用してください。
          コード生成しています。
          コード生成が終了しました。
-     1>urg_cpp.lib(urg_sensor.obj) : warning LNK4099: PDB 'vc100.pdb' が 'urg_cpp.lib(urg_sensor.obj)' で、または 'C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\Debug\vc100.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
-     1>urg_cpp.lib(urg_utils.obj) : warning LNK4099: PDB 'vc100.pdb' が 'urg_cpp.lib(urg_utils.obj)' で、または 'C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\Debug\vc100.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
-     1>urg_cpp.lib(urg_connection.obj) : warning LNK4099: PDB 'vc100.pdb' が 'urg_cpp.lib(urg_connection.obj)' で、または 'C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\Debug\vc100.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
-     1>urg_cpp.lib(urg_tcpclient.obj) : warning LNK4099: PDB 'vc100.pdb' が 'urg_cpp.lib(urg_tcpclient.obj)' で、または 'C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\Debug\vc100.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
-     1>urg_cpp.lib(urg_serial.obj) : warning LNK4099: PDB 'vc100.pdb' が 'urg_cpp.lib(urg_serial.obj)' で、または 'C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\Debug\vc100.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
-     1>urg_cpp.lib(urg_ring_buffer.obj) : warning LNK4099: PDB 'vc100.pdb' が 'urg_cpp.lib(urg_ring_buffer.obj)' で、または 'C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\Debug\vc100.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
-         HORIOKART_MS.vcxproj -> C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\Debug\HORIOKART_MS.exe
-     1>プロジェクト "C:\Users\user\Desktop\つくばチャレンジ2016\HRIOKART2016\MainSystem\HORIOKART_MainControlSystem\HORIOKART_MS\HORIOKART_MS.vcxproj" (Build ターゲット) のビルドが完了しました。
+     1>urg_cpp.lib(urg_sensor.obj) : warning LNK4099: PDB 'vc100.pdb' が 'urg_cpp.lib(urg_sensor.obj)' で、または 'C:\Users\user\Documents\tukuba-git\MainSystem\HORIOKART_MainControlSystem\Debug\vc100.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+     1>urg_cpp.lib(urg_utils.obj) : warning LNK4099: PDB 'vc100.pdb' が 'urg_cpp.lib(urg_utils.obj)' で、または 'C:\Users\user\Documents\tukuba-git\MainSystem\HORIOKART_MainControlSystem\Debug\vc100.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+     1>urg_cpp.lib(urg_connection.obj) : warning LNK4099: PDB 'vc100.pdb' が 'urg_cpp.lib(urg_connection.obj)' で、または 'C:\Users\user\Documents\tukuba-git\MainSystem\HORIOKART_MainControlSystem\Debug\vc100.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+     1>urg_cpp.lib(urg_tcpclient.obj) : warning LNK4099: PDB 'vc100.pdb' が 'urg_cpp.lib(urg_tcpclient.obj)' で、または 'C:\Users\user\Documents\tukuba-git\MainSystem\HORIOKART_MainControlSystem\Debug\vc100.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+     1>urg_cpp.lib(urg_serial.obj) : warning LNK4099: PDB 'vc100.pdb' が 'urg_cpp.lib(urg_serial.obj)' で、または 'C:\Users\user\Documents\tukuba-git\MainSystem\HORIOKART_MainControlSystem\Debug\vc100.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+     1>urg_cpp.lib(urg_ring_buffer.obj) : warning LNK4099: PDB 'vc100.pdb' が 'urg_cpp.lib(urg_ring_buffer.obj)' で、または 'C:\Users\user\Documents\tukuba-git\MainSystem\HORIOKART_MainControlSystem\Debug\vc100.pdb' に見つかりません。デバッグ情報がないものとして、オブジェクトにリンクします。
+         HORIOKART_MS.vcxproj -> C:\Users\user\Documents\tukuba-git\MainSystem\HORIOKART_MainControlSystem\Debug\HORIOKART_MS.exe
+     1>プロジェクト "C:\Users\user\Documents\tukuba-git\MainSystem\HORIOKART_MainControlSystem\HORIOKART_MS\HORIOKART_MS.vcxproj" (Build ターゲット) のビルドが完了しました。
 
 ビルドに成功しました。
 
-経過時間 00:00:02.12
+経過時間 00:00:00.76

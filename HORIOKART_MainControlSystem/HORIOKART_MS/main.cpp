@@ -11,7 +11,13 @@
 #include <windows.h>
 #include <stdlib.h>
 
+#include <opencv2/opencv.hpp>
+#include <opencv2/opencv_lib.hpp>
+
 #define PI 3.14159265359
+
+using namespace cv;
+using namespace std;
 
 
 //ルートのファイル名
@@ -40,7 +46,7 @@ extern int initCamera(void);
 
 #define detect 1			//1で有効　0無効
 
-extern void Detect_RoadEdge(double *edge);
+extern void Detect_RoadEdge(double *edge,Mat& src);
 extern void init_Euler(void);
 
 
@@ -303,15 +309,16 @@ void RecordTorq(int num,int mode){
 
 
 
-void RoadEdge_syori(void){
+void RoadEdge_syori(Mat& src){
 	
 	double RoadEdge[2];
 
-	Detect_RoadEdge(RoadEdge);
+	Detect_RoadEdge(RoadEdge,src);
 	
 	//例外処理：前２回の結果から1次関数を取得（2個前が0その次が0.5）
 	//その直線との距離を導出し閾値を用いて例外処理
 	//bufは1が手前　2がその0.5ｍ先（こっちが近い）
+	//
 
 
 	if ((abs(RoadEdge_buf1[0] - RoadEdge_buf2[1]) > 0.5) && (abs(RoadEdge_buf2[0] - RoadEdge_buf2[1]) > 0.5))
@@ -373,6 +380,20 @@ void RunControl_mainloop(void){
 	int border_count = 0;
 
 	int roadmode;
+
+	Mat src;
+	
+	VideoCapture cap(0);
+	if (!cap.isOpened()){
+		cout << "Camera cannot Open!!" << endl;
+		return;
+	}
+	else
+		cout << "camera open\n";
+	
+	Sleep(2000);
+
+
 
 
 	//各座標系を原点に設定
@@ -449,7 +470,8 @@ void RunControl_mainloop(void){
 			if (Spur_over_line_LC(border, tar_y_LC, tar_th_LC)){
 				border_count++;
 				if (roadmode)
-					RoadEdge_syori();
+					cap >> src;
+					RoadEdge_syori(src);
 
 				//片側に寄ってるとき:目的地のｙ座標を変更して駆動指令を入れなおす
 				if ((abs(PassibleRange_left) > 0.01) && (abs(PassibleRange_left)<0.3)){

@@ -23,13 +23,20 @@ mode	1:直進
 #include <windows.h>
 #include <stdlib.h>
 
+#include <opencv2/opencv.hpp>
+#include <opencv2/opencv_lib.hpp>
+
+using namespace cv;
+using namespace std;
+
+
 //コントローラ用ArduinoのCOMポートの指定
 #define COMPORT "\\\\.\\COM15"
 
 
 const char *filename = "1029_1.csv";
 
-
+extern int Euler_state(void);
 
 
 //ypspurとの通信の初期化
@@ -90,6 +97,7 @@ int main(int argc, _TCHAR* argv[])
 	int num = 0;
 	int ret;
 	int Roadmode;
+	int mode;
 
 	FILE *rt;
 
@@ -104,6 +112,10 @@ int main(int argc, _TCHAR* argv[])
 	
 	initSpur();
 
+	cout << "select mode" << endl;
+	cout << "1:without tilt  2:with tilt";
+	cin >> mode;
+
 	Spur_set_pos_GL(0.0, 0.0, 0.0);
 	Spur_set_pos_LC(0.0, 0.0, 0.0);
 
@@ -111,35 +123,76 @@ int main(int argc, _TCHAR* argv[])
 
 	fopen_s(&rt, filename, "w");
 
-
-	num++;
-
-	while (1){
-		if(getchar()=='q')
-			break;
+	if (mode == 2){
 		
-		Spur_get_pos_GL(&x_GL, &y_GL, &th_GL);
-		Spur_get_pos_LC(&x_LC, &y_LC, &th_LC);
+		char key_in;
+		num++;
+
+		while (1){
+			
+			if (waitKey(0) > 0){
+				//if (getchar() == 'q')
+					//break;
+
+				Spur_get_pos_GL(&x_GL, &y_GL, &th_GL);
+				Spur_get_pos_LC(&x_LC, &y_LC, &th_LC);
 
 
-		std::cout << "num:" << num << "\n";
-		std::cout << "GL:" << x_GL << "," << y_GL << "," << th_GL << "\n";
-		std::cout << "LC:" << x_LC << "," << y_LC << "," << th_LC << "\n";
-		
-		std::cout << "エッジ検出について\n 0：無効　　１：有効\n";
-		std::cin >> Roadmode;
+				std::cout << "num:" << num << "\n";
+				std::cout << "GL:" << x_GL << "," << y_GL << "," << th_GL << "\n";
+				std::cout << "LC:" << x_LC << "," << y_LC << "," << th_LC << "\n";
+
+				std::cout << "エッジ検出について\n 0：無効　　１：有効     9:終了\n";
+				std::cin >> Roadmode;
+
+				fprintf(rt, "%d,%lf,%lf,%d\n", num, x_GL, y_GL, Roadmode);
+
+				if (Roadmode == 9){
+					break;
+				}
+
+				num++;
+
+				Spur_set_pos_LC(0.0, 0.0, 0.0);
+				x_GL_b = x_GL; y_GL_b = y_GL; th_GL_b = th_GL;
+			}
+
+			Euler_state();
+
+		}
+
+	}
 	
-		fprintf(rt, "%d,%lf,%lf,%d\n", num, x_GL, y_GL, Roadmode);
-
+	else {
 
 		num++;
 
-		Spur_set_pos_LC(0.0, 0.0, 0.0);
-		x_GL_b = x_GL; y_GL_b = y_GL; th_GL_b = th_GL;
+		while (1){
+			if (getchar() == 'q')
+				break;
 
-		
+			Spur_get_pos_GL(&x_GL, &y_GL, &th_GL);
+			Spur_get_pos_LC(&x_LC, &y_LC, &th_LC);
+
+
+			std::cout << "num:" << num << "\n";
+			std::cout << "GL:" << x_GL << "," << y_GL << "," << th_GL << "\n";
+			std::cout << "LC:" << x_LC << "," << y_LC << "," << th_LC << "\n";
+
+			std::cout << "エッジ検出について\n 0：無効　　１：有効\n";
+			std::cin >> Roadmode;
+
+			fprintf(rt, "%d,%lf,%lf,%d\n", num, x_GL, y_GL, Roadmode);
+
+
+			num++;
+
+			Spur_set_pos_LC(0.0, 0.0, 0.0);
+			x_GL_b = x_GL; y_GL_b = y_GL; th_GL_b = th_GL;
+
+
+		}
 	}
-
 	fclose(rt);
 
 	std::cout << "Program End\n";

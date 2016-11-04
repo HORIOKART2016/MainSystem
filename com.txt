@@ -1,0 +1,14 @@
+win7gtune
+
+motordriver 10
+arduino_con 17
+arduino_euler 16
+URG  21
+
+
+win10
+
+motordriver 3
+arduino_con 6?
+arduino_euler 5
+URG 4

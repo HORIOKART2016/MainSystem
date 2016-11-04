@@ -26,7 +26,7 @@ mode	1:直進
 #include <opencv2/opencv.hpp>
 #include <opencv2/opencv_lib.hpp>
 
-//using namespace cv;
+using namespace cv;
 using namespace std;
 
 
@@ -125,13 +125,12 @@ int main(int argc, _TCHAR* argv[])
 	fopen_s(&rt, filename, "w");
 
 	if (mode == 2){
-		
-		char key_in;
+		cvNamedWindow("brank");
 		num++;
 
 		while (1){
 			//int z = cv::waitKey(0);
-			if (count%200==0){
+			if (waitKey(10)>0){
 				//if (getchar() == 'q')
 					//break;
 
@@ -145,12 +144,16 @@ int main(int argc, _TCHAR* argv[])
 
 				std::cout << "エッジ検出について\n 0：無効　　１：有効     9:終了\n";
 				std::cin >> Roadmode;
-
-				fprintf(rt, "%d,%lf,%lf,%d\n", num, x_GL, y_GL, Roadmode);
-
+				
 				if (Roadmode == 9){
 					break;
 				}
+				
+				fprintf(rt, "%d,%lf,%lf,%d\n", num, x_GL, y_GL, Roadmode);
+
+				cout << "record point" << num << endl;
+
+
 
 				num++;
 

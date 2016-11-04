@@ -26,7 +26,7 @@ mode	1:íºêi
 #include <opencv2/opencv.hpp>
 #include <opencv2/opencv_lib.hpp>
 
-using namespace cv;
+//using namespace cv;
 using namespace std;
 
 
@@ -34,7 +34,7 @@ using namespace std;
 #define COMPORT "\\\\.\\COM15"
 
 
-const char *filename = "1029_1.csv";
+const char *filename = "../../1104_4.csv";
 
 extern int Euler_state(void);
 
@@ -98,6 +98,7 @@ int main(int argc, _TCHAR* argv[])
 	int ret;
 	int Roadmode;
 	int mode;
+	int count=0;
 
 	FILE *rt;
 
@@ -129,8 +130,8 @@ int main(int argc, _TCHAR* argv[])
 		num++;
 
 		while (1){
-			
-			if (waitKey(0) > 0){
+			//int z = cv::waitKey(0);
+			if (count%200==0){
 				//if (getchar() == 'q')
 					//break;
 
@@ -158,7 +159,9 @@ int main(int argc, _TCHAR* argv[])
 			}
 
 			Euler_state();
-
+			cout << "unko"<<endl;
+			Sleep(50);
+			count++;
 		}
 
 	}

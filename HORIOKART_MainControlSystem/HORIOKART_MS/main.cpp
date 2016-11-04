@@ -21,7 +21,7 @@ using namespace std;
 
 
 //ルートのファイル名
-const char *routefile = "1029_1.csv";
+const char *routefile = "../../1104_2.csv";
 //const char *routefile = "../../TeachingSystem_HORIOKART/TeachingSystem_HORIOKART/SampleRoute.csv";
 FILE *rt;
 
@@ -383,15 +383,18 @@ void RunControl_mainloop(void){
 
 	Mat src;
 	
-	VideoCapture cap(0);
+	/*VideoCapture cap(0);
+	cout << "unko"<<endl;
+	Sleep(2000);
+
 	if (!cap.isOpened()){
 		cout << "Camera cannot Open!!" << endl;
 		return;
 	}
 	else
 		cout << "camera open\n";
-	
-	Sleep(2000);
+	*/
+
 
 
 
@@ -469,10 +472,13 @@ void RunControl_mainloop(void){
 			//0.5m進む度に画像取得・2ｍごとに駆動指令を入れなおす
 			if (Spur_over_line_LC(border, tar_y_LC, tar_th_LC)){
 				border_count++;
-				if (roadmode)
+				/*if (roadmode)
 					cap >> src;
+				while (src.empty()){
+					Sleep(10);
+				}
 					RoadEdge_syori(src);
-
+					*/
 				//片側に寄ってるとき:目的地のｙ座標を変更して駆動指令を入れなおす
 				if ((abs(PassibleRange_left) > 0.01) && (abs(PassibleRange_left)<0.3)){
 					tar_y_LC = tar_y_LC-0.5;

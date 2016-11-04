@@ -1,26 +1,18 @@
-﻿2016/11/04 17:37:34 にビルドを開始しました。
-     1>ノード 2 上のプロジェクト "C:\Users\user\Documents\tukuba-git\MainSystem\TeachingSystem_HORIOKART\TeachingSystem_HORIOKART\TeachingSystem_HORIOKART.vcxproj" (Build ターゲット)。
+﻿2016/11/04 21:31:58 にビルドを開始しました。
+     1>ノード 2 上のプロジェクト "C:\Users\user\Desktop\MainSystem\TeachingSystem_HORIOKART\TeachingSystem_HORIOKART\TeachingSystem_HORIOKART.vcxproj" (Build ターゲット)。
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\ypspur\include /I"C:\Users\user\Documents\tukuba-git\MainSystem\TeachingSystem_HORIOKART\headder" /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\TeachingSystem_HORIOKART.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Euler.cpp
-         Euler.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IC:\ypspur\include /IC:\Users\user\Desktop\MainSystem\TeachingSystem_HORIOKART\headder /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\TeachingSystem_HORIOKART.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt Teaching_main.cpp
+         Teaching_main.cpp
      1>c:\ypspur\include\ypparam.h : warning C4819: ファイルは、現在のコード ページ (932) で表示できない文字を含んでいます。データの損失を防ぐために、ファイルを Unicode 形式で保存してください。
-     1>c:\users\user\documents\tukuba-git\mainsystem\teachingsystem_horiokart\teachingsystem_horiokart\euler.cpp(85): warning C4244: '=' : 'double' から 'float' への変換です。データが失われる可能性があります。
-     1>c:\users\user\documents\tukuba-git\mainsystem\teachingsystem_horiokart\teachingsystem_horiokart\euler.cpp(184): warning C4244: '=' : 'double' から 'float' への変換です。データが失われる可能性があります。
-     1>c:\users\user\documents\tukuba-git\mainsystem\teachingsystem_horiokart\teachingsystem_horiokart\euler.cpp(185): warning C4244: '=' : 'double' から 'float' への変換です。データが失われる可能性があります。
-     1>c:\users\user\documents\tukuba-git\mainsystem\teachingsystem_horiokart\teachingsystem_horiokart\euler.cpp(186): warning C4244: '=' : 'double' から 'float' への変換です。データが失われる可能性があります。
-     1>c:\users\user\documents\tukuba-git\mainsystem\teachingsystem_horiokart\teachingsystem_horiokart\euler.cpp(187): warning C4244: '=' : 'double' から 'float' への変換です。データが失われる可能性があります。
-     1>c:\users\user\documents\tukuba-git\mainsystem\teachingsystem_horiokart\teachingsystem_horiokart\euler.cpp(130): warning C4101: 'ANG' : ローカル変数は 1 度も使われていません。
-     1>c:\users\user\documents\tukuba-git\mainsystem\teachingsystem_horiokart\teachingsystem_horiokart\euler.cpp(130): warning C4101: 'DIS' : ローカル変数は 1 度も使われていません。
-     1>c:\users\user\documents\tukuba-git\mainsystem\teachingsystem_horiokart\teachingsystem_horiokart\euler.cpp(134): warning C4101: 'droidOrientation' : ローカル変数は 1 度も使われていません。
-     1>c:\users\user\documents\tukuba-git\mainsystem\teachingsystem_horiokart\teachingsystem_horiokart\euler.cpp(130): warning C4101: 'DR' : ローカル変数は 1 度も使われていません。
-     1>c:\users\user\documents\tukuba-git\mainsystem\teachingsystem_horiokart\teachingsystem_horiokart\euler.cpp(130): warning C4101: 'DL' : ローカル変数は 1 度も使われていません。
+     1>c:\users\user\desktop\mainsystem\teachingsystem_horiokart\teachingsystem_horiokart\teaching_main.cpp(98): warning C4101: 'ret' : ローカル変数は 1 度も使われていません。
+     1>c:\users\user\desktop\mainsystem\teachingsystem_horiokart\teachingsystem_horiokart\teaching_main.cpp(129): warning C4101: 'key_in' : ローカル変数は 1 度も使われていません。
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\user\Documents\tukuba-git\MainSystem\TeachingSystem_HORIOKART\Debug\TeachingSystem_HORIOKART.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\ypspur\lib /LIBPATH:"C:\Users\user\Documents\tukuba-git\MainSystem\TeachingSystem_HORIOKART\lib" libypspur_dll.lib opencv_core249d.lib opencv_highgui249d.lib opencv_imgproc249d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\user\Documents\tukuba-git\MainSystem\TeachingSystem_HORIOKART\Debug\TeachingSystem_HORIOKART.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\user\Documents\tukuba-git\MainSystem\TeachingSystem_HORIOKART\Debug\TeachingSystem_HORIOKART.lib" /MACHINE:X86 Debug\Euler.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\user\Desktop\MainSystem\TeachingSystem_HORIOKART\Debug\TeachingSystem_HORIOKART.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\ypspur\lib /LIBPATH:C:\Users\user\Desktop\MainSystem\TeachingSystem_HORIOKART\lib libypspur_dll.lib opencv_core249d.lib opencv_highgui249d.lib opencv_imgproc249d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\user\Desktop\MainSystem\TeachingSystem_HORIOKART\Debug\TeachingSystem_HORIOKART.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\user\Desktop\MainSystem\TeachingSystem_HORIOKART\Debug\TeachingSystem_HORIOKART.lib" /MACHINE:X86 Debug\Euler.obj
          Debug\stdafx.obj
          Debug\Teaching_main.obj
-         TeachingSystem_HORIOKART.vcxproj -> C:\Users\user\Documents\tukuba-git\MainSystem\TeachingSystem_HORIOKART\Debug\TeachingSystem_HORIOKART.exe
-     1>プロジェクト "C:\Users\user\Documents\tukuba-git\MainSystem\TeachingSystem_HORIOKART\TeachingSystem_HORIOKART\TeachingSystem_HORIOKART.vcxproj" (Build ターゲット) のビルドが完了しました。
+         TeachingSystem_HORIOKART.vcxproj -> C:\Users\user\Desktop\MainSystem\TeachingSystem_HORIOKART\Debug\TeachingSystem_HORIOKART.exe
+     1>プロジェクト "C:\Users\user\Desktop\MainSystem\TeachingSystem_HORIOKART\TeachingSystem_HORIOKART\TeachingSystem_HORIOKART.vcxproj" (Build ターゲット) のビルドが完了しました。
 
 ビルドに成功しました。
 
-経過時間 00:00:00.66
+経過時間 00:00:01.11
